@@ -31,7 +31,23 @@ Enlaces directos: `/?era=roma&loc=roma--pompeya`.
 | `pnpm test` | Tests unitarios (Vitest) |
 | `pnpm test:e2e` | Tests e2e (Playwright sobre `out/`; ejecuta antes `pnpm build`) |
 | `pnpm test:motion` | Graba video y secuencias de frames de las 4 transiciones en `tests/motion-frames/` |
+| `pnpm test:scenes` | Captura frames de las escenas animadas (`-- <id>` para una sola) |
 | `pnpm validate:data` | Valida el contenido con zod (`pnpm validate:data <archivo-era.ts>` valida una sola era) |
+
+## Escenas animadas
+
+Seis tarjetas abren un "video" animado hecho 100 % con código (React Three Fiber, sin assets): botón «▶ Ver escena» o `&scene=<elementId>` en la URL.
+
+| Escena | Enlace |
+|---|---|
+| Nace la escritura (Uruk) | `/?era=mesopotamia&loc=mesopotamia--uruk&scene=mesopotamia--uruk--technology` |
+| Construir una montaña de piedra (Giza) | `/?era=egipto-antiguo&loc=egipto-antiguo--giza&scene=egipto-antiguo--giza--landmark` |
+| El templo de Atenea (Atenas) | `/?era=grecia-clasica&loc=grecia-clasica--atenas&scene=grecia-clasica--atenas--landmark` |
+| El día que desapareció Pompeya | `/?era=roma&loc=roma--pompeya&scene=roma--pompeya--event` |
+| La máquina que multiplicó los libros (Maguncia) | `/?era=renacimiento&loc=renacimiento--maguncia&scene=renacimiento--maguncia--technology` |
+| La ciudad de las chimeneas (Manchester) | `/?era=revolucion-industrial&loc=revolucion-industrial--manchester&scene=revolucion-industrial--manchester--technology` |
+
+Controles: Espacio (play/pausa), ←/→ (beat anterior/siguiente), C (subtítulos), Esc (cerrar). `pnpm test:scenes [-- <id>]` captura frames de revisión en `tests/scene-frames/`. Kit de primitivas: `src/scenes/kit/` (vista previa en `?debug=kit`).
 
 ## Añadir una era
 

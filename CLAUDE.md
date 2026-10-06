@@ -136,13 +136,16 @@ Ajuste S0: el `technology` de Mánchester era "Canal de Bridgewater"; se sustitu
 - [x] S2 Kit de escena
 - [x] S3 Escena de referencia: Uruk (construida por agente Opus en paralelo; integrada antes por urgencia de presentación)
 - [x] S4 Escenas 2–6 (estado parcial: agentes detenidos a petición del usuario y fusionados tal cual)
-- [ ] S5 Unificación y pulido
-- [ ] S6 Revisión final
+- [ ] S5 Unificación y pulido (pendiente — cierre anticipado)
+- [ ] S6 Revisión final (pendiente — cierre anticipado)
 
 ### Estado
 - S0 ✅ mapeo hecho (store, URL sync, InfoPanel/ElementCard, Experience, motionTokens, tests); 5/6 elementos existían, Mánchester ajustado; `validate:data` verde. Instalado `@react-three/postprocessing` 3.1.3.
 - S1 ✅ registro (`scenes`, `getSceneByElementId`, `hasScene`, `getSceneLocation`), `scenes/beats.ts` (`beatAt`, `beatIndexAt`, `midpoint`, `formatClock`, `validateBeats`), escena placeholder 10 s en `primeros-humanos--blombos--technology`, store/URL/`data-scene`, reproductor (clip-path desde la tarjeta, `PLAYER_MOTION`), botón "Ver escena" en ElementCard, `window.__scene` con `?debug=1`. Unit `scenes.test.ts` (recorre todo el registro) y e2e `player.spec.ts`.
 - S4 ⚠️ a petición del usuario se detuvieron los 6 agentes Opus a mitad de su ciclo de pulido y se fusionó su estado actual: Uruk 72 s/6 beats, Giza 82 s/8, Atenas 84 s/8, Pompeya 88 s/8, Maguncia 80 s/8, Manchester 86 s/8. Las 6 cargan y renderizan sin errores (captura del punto medio revisada); typecheck, lint, test, validate:data y build verdes. Pendiente: iteraciones de pulido por frames (mínimo 2 por escena), S5 unificación y S6 revisión final.
+
+- **Cierre (2026-10-05)** — por decisión del usuario se cierra el trabajo en este punto y se publica en https://github.com/maosuarez/Cronotopo. Atlas completo (F0–F7). Escenas: S0–S4 hechas (S4 parcial), S5 y S6 pendientes.
+  Para retomar: (1) pulido por frames de cada escena con `pnpm build && pnpm test:scenes -- <id>` (≥2 iteraciones; sobre todo el beat final de cada una, que nadie revisó); (2) S5: revisar las 6 juntas y subir al kit primitivas duplicadas; (3) S6: auditoría de captions, rendimiento (dispose al cerrar, chunks) y e2e por escena (abrir desde tarjeta, deep link, Esc, atrás/adelante, reduced motion).
 
 ### Decisiones
 - Estado del reproductor en el store (`sceneElementId`), se limpia al cambiar era/ubicación o cerrar panel; Esc del reproductor en fase *capture* con `preventDefault` para no cerrar también el panel.
