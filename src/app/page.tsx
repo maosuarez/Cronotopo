@@ -1,3 +1,4 @@
+import { KitDebug } from "@/components/player/KitDebug";
 import { ScenePlayer } from "@/components/player/ScenePlayer";
 import { ExperienceLoader } from "@/components/scene/ExperienceLoader";
 import { AccentSync } from "@/components/ui/AccentSync";
@@ -34,6 +35,7 @@ export default function Home() {
       <InfoPanel />
       <ScenePlayer />
       <LoadingScreen />
+      <KitDebug />
     </main>
   );
 }
