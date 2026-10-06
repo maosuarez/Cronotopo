@@ -46,3 +46,4 @@ next-env.d.ts
 /tests/motion-frames/
 /tests/motion-videos/
 /tests/scene-frames/
+/.claude/worktrees/

@@ -19,14 +19,14 @@ export const CAMERA: CameraKey[] = [
   // 3 · tokens: over the enclosure wall, through the opened front of the storeroom, onto the mat
   { t: 23.6, pos: [32.8, 4.8, 19.5], look: [32.5, 1.0, 8.6], fov: 34 },
   { t: 25.6, pos: [32.3, 1.3, 9.6], look: [32.12, 0.79, 8.3], fov: 20 },
-  { t: 27.2, pos: [32.17, 0.95, 8.78], look: [32.1, 0.78, 8.29], fov: 15, ease: ease.out },
-  { t: 35, pos: [32.2, 0.93, 8.74], look: [32.11, 0.778, 8.3], fov: 14, ease: ease.sine },
+  { t: 27.2, pos: [32.17, 1.0, 8.75], look: [32.1, 0.78, 8.29], fov: 15, ease: ease.out },
+  { t: 35, pos: [32.2, 0.98, 8.72], look: [32.11, 0.778, 8.3], fov: 14, ease: ease.sine },
   // 4 · first tablet: pan right to the tablet, slow push-in while the scribe writes
-  { t: 37.6, pos: [32.43, 0.95, 8.7], look: [32.4, 0.774, 8.31], fov: 13 },
-  { t: 47.2, pos: [32.42, 0.93, 8.64], look: [32.402, 0.774, 8.31], fov: 11.5, ease: ease.sine },
+  { t: 37.6, pos: [32.43, 1.0, 8.66], look: [32.4, 0.774, 8.32], fov: 13 },
+  { t: 47.2, pos: [32.42, 0.99, 8.6], look: [32.402, 0.774, 8.322], fov: 12, ease: ease.sine },
   // 5 · evolution: track along the row of tablets
-  { t: 50, pos: [32.62, 1.3, 9.02], look: [32.62, 0.76, 8.31], fov: 22 },
-  { t: 58.5, pos: [32.67, 1.26, 8.98], look: [32.66, 0.76, 8.31], fov: 21, ease: ease.sine },
+  { t: 50, pos: [32.64, 1.36, 9.12], look: [32.64, 0.76, 8.31], fov: 24 },
+  { t: 58.5, pos: [32.66, 1.32, 9.07], look: [32.66, 0.76, 8.31], fov: 23, ease: ease.sine },
   // 6 · archive: pull back to see the shelves, then out and up over the city
   { t: 62, pos: [33.9, 1.95, 11.4], look: [34.2, 1.15, 4.8], fov: 36 },
   { t: 66.5, pos: [33.9, 2.1, 12.6], look: [34.0, 1.2, 4.8], ease: ease.sine },

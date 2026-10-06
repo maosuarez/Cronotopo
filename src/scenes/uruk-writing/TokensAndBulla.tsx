@@ -76,7 +76,7 @@ export function TokensAndBulla({ time }: { time: number }) {
 
   // Cap: rests upside down beside the bowl, then flips over in an arc and closes the ball.
   const close = ease.inOut(progress(time, T.closeStart, T.closeEnd));
-  const capPos: Vec3 = [bx + lerp(-0.068, 0, close), by + R + Math.sin(Math.PI * close) * 0.055, bz];
+  const capPos: Vec3 = [bx + lerp(-0.068, 0, close), by + R + Math.sin(Math.PI * close) * 0.032, bz];
   const sealIn = window01(time, T.rollStart - 0.5, T.rollStart, T.rollEnd + 0.3, T.rollEnd + 0.9);
 
   return (

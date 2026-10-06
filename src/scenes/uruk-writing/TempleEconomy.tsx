@@ -58,7 +58,7 @@ function Flock({ time, count, shadows }: { time: number; count: number; shadows:
   const sheep = useMemo(() => {
     const rng = createRng(12);
     return Array.from({ length: count }, (_, i) => ({
-      start: 57 - i * 1.45 + rng.range(-0.4, 0.4),
+      start: 66 - i * 1.3 + rng.range(-0.4, 0.4),
       stop: L - 0.3 - i * 0.62,
       lateral: rng.range(-0.9, 0.9),
       color: rng.pick(WOOL_COLORS),

@@ -12,15 +12,15 @@ export const TABLET_A_STROKES: readonly Stroke[] = [...NUMERALS, ...BARLEY];
 
 type Mark = { stroke: number; kind: "press" | "draw"; start: number; end: number };
 
-/** Numerals are pressed (0.65 s each) from 38.2 s; the barley sign is drawn from 41.8 s. */
+/** Numerals are pressed (0.6 s each) from 37.9 s; the barley sign is drawn from 40.9 s. */
 const SCHEDULE: Mark[] = (() => {
   const marks: Mark[] = [];
-  let t = 38.2;
+  let t = 37.9;
   NUMERALS.forEach((_, i) => {
-    marks.push({ stroke: i, kind: "press", start: t, end: t + 0.42 });
-    t += 0.65;
+    marks.push({ stroke: i, kind: "press", start: t, end: t + 0.4 });
+    t += 0.6;
   });
-  t = 41.8;
+  t = 40.9;
   BARLEY.forEach((_, i) => {
     const dur = i === 0 ? 0.9 : 0.42;
     marks.push({ stroke: NUMERALS.length + i, kind: "draw", start: t, end: t + dur });

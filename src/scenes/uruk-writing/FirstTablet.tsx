@@ -33,13 +33,13 @@ export function FirstTablet({ time, shadows }: { time: number; shadows: boolean 
           castShadow
         />
       )}
-      <Label3D position={[x - 0.026, y + 0.034, z - 0.012]} opacity={window01(time, 40.4, 41.0, 48.0, 48.6)} size="sm">
+      <Label3D position={[x - 0.026, y + 0.034, z - 0.012]} opacity={window01(time, 39.4, 40.0, 48.0, 48.6)} size="sm">
         Marcas numéricas
       </Label3D>
-      <Label3D position={[x + 0.02, y + 0.034, z - 0.012]} opacity={window01(time, 45.4, 46.0, 48.0, 48.6)} size="sm">
+      <Label3D position={[x + 0.02, y + 0.034, z - 0.012]} opacity={window01(time, 44.6, 45.2, 48.0, 48.6)} size="sm">
         Cebada
       </Label3D>
-      <Label3D position={[x, y + 0.016, z + 0.05]} opacity={window01(time, 43.0, 43.8, 48.0, 48.6)} size="md">
+      <Label3D position={[x, y + 0.016, z + 0.05]} opacity={window01(time, 42.4, 43.2, 48.0, 48.6)} size="md">
         Protocuneiforme
       </Label3D>
     </group>

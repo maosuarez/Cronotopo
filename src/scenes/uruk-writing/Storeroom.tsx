@@ -151,7 +151,7 @@ export function Storeroom({ time, quality, frontWall }: { time: number; quality:
       <Shelves time={time} quality={quality} />
       <StoredSacks />
       {/* soft bounce light inside the room so the interior reads even when the roof shades it */}
-      <pointLight position={[cx, H - 0.5, cz + 1]} color="#ffd9a8" intensity={9} distance={10} decay={2} />
+      <pointLight position={[cx + 1, H - 0.6, cz]} color="#ffd9a8" intensity={14} distance={10} decay={2} />
     </group>
   );
 }

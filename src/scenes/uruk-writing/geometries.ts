@@ -54,13 +54,14 @@ export const URUK_GEO = {
   tablet: () => cached("uruk-tablet", () => pillow(TABLET_SIZE.w, TABLET_SIZE.h, TABLET_SIZE.d, 0.008)),
   /** Later, larger and more rectangular tablet. */
   tabletLarge: () => cached("uruk-tablet-large", () => pillow(0.1, 0.022, 0.072, 0.006)),
-  /** Sack of barley tied at the neck (base at y = 0, ~0.7 m tall). */
+  /** Sack of barley tied at the neck (base at y = 0, ~0.65 m tall). */
   sack: () =>
     cached("uruk-sack", () =>
       merge([
-        new SphereGeometry(0.27, 8, 6).scale(1, 1.05, 0.85).translate(0, 0.27, 0),
-        new CylinderGeometry(0.06, 0.12, 0.14, 7).translate(0, 0.58, 0),
-        new ConeGeometry(0.1, 0.12, 7).rotateX(Math.PI).translate(0, 0.7, 0),
+        // slumped body, wider at the bottom, and a small gathered neck
+        new IcosahedronGeometry(0.3, 1).scale(1, 0.95, 0.78).translate(0, 0.27, 0),
+        new CylinderGeometry(0.05, 0.13, 0.12, 6).translate(0, 0.56, 0),
+        new IcosahedronGeometry(0.06, 0).translate(0, 0.64, 0),
       ]),
     ),
   /** Sheep in two parts so each gets its own colour: woolly body, and dark head + legs. */
