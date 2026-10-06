@@ -5,7 +5,7 @@ import { eras } from "@/data/index";
 import type { HistoricalEra, MacroPeriod } from "@/domain/types";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { UI_MOTION } from "@/lib/choreography";
+import { UI_MOTION } from "@/lib/motionTokens";
 import { formatYearRange } from "@/lib/years";
 import { useAtlasStore } from "@/store/useAtlasStore";
 import { ChromeIn } from "./ChromeIn";
@@ -103,6 +103,7 @@ export function Timeline() {
         setEra(cursorId);
         break;
       case "Escape":
+        e.preventDefault();
         setCursor(null);
         return;
       default:

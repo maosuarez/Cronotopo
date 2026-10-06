@@ -70,10 +70,12 @@ export function greatCirclePoints(
 }
 
 /** Positive = point is on the hemisphere visible from the camera, negative = hidden side. */
+const scratchNormal = new Vector3();
+const scratchToCamera = new Vector3();
 export function isFacingCamera(point: Vector3, cameraPosition: Vector3): number {
-  const normal = point.clone().normalize();
-  const toCamera = cameraPosition.clone().sub(point).normalize();
-  return normal.dot(toCamera);
+  scratchNormal.copy(point).normalize();
+  scratchToCamera.copy(cameraPosition).sub(point).normalize();
+  return scratchNormal.dot(scratchToCamera);
 }
 
 /** Smooth 0..1 opacity: 1 when dot >= fadeStart, 0 when dot <= fadeEnd. */

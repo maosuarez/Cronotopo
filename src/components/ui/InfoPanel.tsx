@@ -7,7 +7,7 @@ import { getLocation } from "@/data/index";
 import type { HistoricalLocation } from "@/domain/types";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { CSS_EASE, UI_MOTION } from "@/lib/choreography";
+import { CSS_EASE, UI_MOTION } from "@/lib/motionTokens";
 import { formatYear } from "@/lib/years";
 import { useAtlasStore } from "@/store/useAtlasStore";
 import { ElementCard } from "./ElementCard";
@@ -86,11 +86,15 @@ function PanelShell({ location, index }: ShellProps) {
   // Captured at first render: child effects (heading focus) run before this component's effects.
   const [trigger] = useState<Element | null>(() => document.activeElement);
   const [entering, setEntering] = useState(true);
+  const locationIdRef = useRef(location.id);
+  useEffect(() => {
+    locationIdRef.current = location.id;
+  }, [location.id]);
 
   // Remember what had focus (the location row, or body) so we can give it back; also Esc.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") clearSelection();
+      if (e.key === "Escape" && !e.defaultPrevented) clearSelection();
     };
     window.addEventListener("keydown", onKey);
     const settle = window.setTimeout(
@@ -100,7 +104,12 @@ function PanelShell({ location, index }: ShellProps) {
     return () => {
       window.removeEventListener("keydown", onKey);
       window.clearTimeout(settle);
-      if (trigger instanceof HTMLElement && trigger.isConnected) trigger.focus({ preventScroll: true });
+      if (trigger instanceof HTMLElement && trigger !== document.body && trigger.isConnected) {
+        trigger.focus({ preventScroll: true });
+      } else {
+        // Opened from the canvas: hand focus to the matching location row if it exists.
+        document.querySelector<HTMLElement>(`[data-location-id="${locationIdRef.current}"]`)?.focus({ preventScroll: true });
+      }
     };
   }, [clearSelection, trigger]);
 
@@ -150,7 +159,7 @@ function PanelShell({ location, index }: ShellProps) {
 }
 
 export function InfoPanel() {
-  const found = useAtlasStore((s) => getLocation(s.selectedLocationId));
+  const found = useAtlasStore((s) => (s.sceneReady ? getLocation(s.selectedLocationId) : null));
   const index = found ? found.era.locations.findIndex((l) => l.id === found.location.id) : 0;
 
   return (

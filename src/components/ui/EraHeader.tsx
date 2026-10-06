@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { eras, getEra } from "@/data/index";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { CSS_EASE, UI_MOTION } from "@/lib/choreography";
+import { CSS_EASE, UI_MOTION } from "@/lib/motionTokens";
 import { formatYearRange } from "@/lib/years";
 import { useAtlasStore } from "@/store/useAtlasStore";
 import { ChromeIn } from "./ChromeIn";

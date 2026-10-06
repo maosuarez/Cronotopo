@@ -48,7 +48,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - [x] F5 Interfaz
 - [x] F6 QA (e2e + motion)
 - [x] F6.5 Pulido de movimiento (≥2 iteraciones)
-- [ ] F7 Revisión final + README
+- [x] F7 Revisión final + README
 
 ## Estado
 - F0 ✅ scaffold, deps exactas, scripts, `output: 'export'`, build+lint verdes.
@@ -57,6 +57,8 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - F3 ✅ escena (globo Blue Marble, atmósfera fresnel tintable, barrido temporal, estrellas, marcadores, arcos trazables, CameraRig+OrbitControls, SceneDirector con las 4 timelines). `next build` ok; captura era 1 revisada (marcadores en Etiopía/Sudáfrica/Francia). Commit antes que F2 porque el contenido corre en paralelo.
 - F4 ✅ store (+`displayedEraId`, `sceneReady`), director robusto a interrupciones, `frameShift` (setViewOffset) para encuadrar a la izquierda del panel / arriba del bottom sheet, `useUrlSync` + `lib/url.ts`, tests store/url, e2e deep link verde.
 - F5 ✅ tokens en `globals.css` (@theme, `--accent` con @property), Timeline (listbox, ←/→ Home/End foco, Enter/Espacio confirma), EraHeader, LocationList, InfoPanel (panel/bottom sheet), ElementCard, LoadingScreen, AccentSync, Announcer. Capturas 1440/390 revisadas; sin scroll horizontal (360/390/1440). Luz principal sigue a la cámara (siempre se ve el hemisferio iluminado).
+- F7 ✅ revisión adversarial + rendimiento aplicadas: guard de generación antes de `kill()` (evitaba timelines huérfanas), `settle` al inicio de select/close (valores congelados tras interrupción), hover que se limpia en cara oculta/transición, panel solo con `sceneReady`, Esc sin doble efecto, foco de retorno, chrome `inert` hasta mostrarse, dispose de materiales de atmósfera. JS inicial 363 → 273 KB gz (three/gsap fuera del bundle inicial). `typecheck && lint && test && validate:data && build && test:e2e` verdes. README.
+- **MVP del atlas completo.**
 - F6.5 ✅ 3 iteraciones de pulido (ver Coreografía › Iteraciones).
 - F6 ✅ e2e 14/14 (consola, era→lista+URL, panel 5 tarjetas, deep link, Esc, teclado, URL inválida, atrás/adelante, móvil, reduced motion). `test:motion` captura 4 momentos + 2 reduced (CDP screencast + recordVideo).
 
@@ -80,10 +82,12 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - Política de confianza: todo `yearLabel` con "c." lleva confidence ≥ medium (80 elementos bajados de high a medium tras la auditoría), según la regla editorial literal.
 - URL con era válida y loc inválida conserva la era (`?era=roma&loc=x` → `?era=roma`); era inválida → era 1.
 - Captura de movimiento vía CDP `Page.startScreencast` (720×450 JPEG): `page.screenshot` tardaba >3 s/frame con SwiftShader.
+- Timeline usa `--era-count` (inyectado en `<html>` desde los datos) para el espaciado: añadir eras no requiere tocar CSS.
+- `?debug=1` expone `window.__atlasDebug.timeScale()` (tests de movimiento) y sobrevive a la normalización de URL.
 - `@types/node` 24 (peer de Vitest 5).
 
 ## Coreografía
-Fuente única: `src/lib/choreography.ts` (constantes + 4 timelines GSAP con nombre). La escena lee el objeto mutable `sceneMotion` en `useFrame`; solo las timelines escriben en él. La UI 2D (Framer Motion) usa `UI_MOTION` del mismo archivo. Un `SceneDirector` escucha el store y lanza la timeline del momento, matando la anterior (interrumpible: los vuelos capturan la pose inicial al empezar).
+Fuente única: `src/lib/choreography.ts` (4 timelines GSAP con nombre; reexporta las constantes de `src/lib/motionTokens.ts`, módulo sin three/gsap para que la UI no arrastre esas librerías al bundle inicial). La escena lee el objeto mutable `sceneMotion` en `useFrame`; solo las timelines escriben en él. La UI 2D (Framer Motion) usa `UI_MOTION` del mismo archivo. Un `SceneDirector` escucha el store y lanza la timeline del momento, matando la anterior (interrumpible: los vuelos capturan la pose inicial al empezar).
 Principio: lo importante se mueve primero y más (cámara > marcadores > arcos > UI). Curvas: viaje `power2.inOut`, llegada `expo.out`, salida `power2.in`, pop `back.out(2.2)`, trazo `power2.out`, tinte `sine.inOut`.
 
 1. **Carga inicial (`intro`, ≈3,2 s)** — LoadingScreen se funde 0,6 s cuando la textura está lista. t=0 estrellas 0→1 (1,8 s), cámara dolly desde distancia 7,5 al encuadre de la era 1 (2,6 s `expo.out`, frena con peso). t=0,2 atmósfera 0→1 (1,4 s). t=1,5 marcadores pop escalonado (0,7 s, stagger 0,12). +0,25 arcos se trazan (0,9 s, stagger 0,15). t=1,7 UI (header, timeline) sube escalonada (0,8 s, stagger 0,12). Rotación idle tras la intro.
@@ -100,6 +104,8 @@ Principio: lo importante se mueve primero y más (cámara > marcadores > arcos >
 - Limitación: la UI 2D (Framer) no se ralentiza con `timeScale`; su sincronía con la cámara se valida con los videos en tiempo real.
 
 ## Bloqueos
+- Sin GPU en el entorno: e2e y capturas con SwiftShader. El objetivo de 60 fps no se pudo medir en hardware real (≈53k triángulos, 12–15 draw calls).
+- La era 20 usa `endYear: 2026` ("presente"); revisar cada año o derivarlo del build.
 
 ## Fuentes
 - Textura: NASA Visible Earth, Blue Marble Next Generation (dic. 2004, topografía+batimetría), `world.topo.bathy.200412.3x5400x2700.jpg` → redimensionada a 2048×1024 (344 KB) en `public/textures/earth-day-2048.jpg`. Dominio público. https://visibleearth.nasa.gov/images/73909

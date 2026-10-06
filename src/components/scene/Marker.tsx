@@ -67,7 +67,14 @@ export function Marker({ location, index }: Props) {
       // Roughly constant on-screen size: markers shrink as the camera approaches the surface.
       root.current.scale.setScalar(Math.min(1, Math.max(0.25, camera.position.distanceTo(position) / MARKER_REF_DISTANCE)));
     }
-    if (hit.current) hit.current.raycast = visible && dot > 0 ? meshRaycast : noRaycast;
+    const interactive = visible && dot > 0 && !useAtlasStore.getState().isTransitioning;
+    if (hit.current) hit.current.raycast = interactive ? meshRaycast : noRaycast;
+    if (!interactive && (hovered || hoverTarget.current !== 1)) {
+      hoverTarget.current = 1;
+      setHovered(false);
+      if (useAtlasStore.getState().hoveredLocationId === location.id) setStoreHovered(null);
+      document.body.style.cursor = "";
+    }
     if (!visible) return;
 
     hoverScale.current += (hoverTarget.current - hoverScale.current) * Math.min(1, delta * 12);

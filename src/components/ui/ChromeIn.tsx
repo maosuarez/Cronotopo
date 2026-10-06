@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useState, type ReactNode } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { CSS_EASE, UI_MOTION } from "@/lib/choreography";
+import { CSS_EASE, UI_MOTION } from "@/lib/motionTokens";
 import { useAtlasStore } from "@/store/useAtlasStore";
 
 type Props = {
@@ -43,7 +43,7 @@ export function ChromeIn({ order, className, tucked = false, children }: Props) 
       animate={shown ? visibleState : hiddenState}
       transition={transition}
       onAnimationComplete={() => shown && setEntered(true)}
-      inert={tucked}
+      inert={!shown || tucked}
     >
       {children}
     </motion.div>

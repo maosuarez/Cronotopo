@@ -74,7 +74,7 @@
   --accent: #e0a458;
   --edge: 16px;
   /* 20 nodes + 4 group gaps of 24px must fit between the edges */
-  --pitch: clamp(44px, calc((100vw - 2 * var(--edge) - 96px) / 20), 60px);
+  --pitch: clamp(44px, calc((100vw - 2 * var(--edge) - 96px) / var(--era-count, 20)), 60px);
   --timeline-total: calc(var(--timeline-h) + env(safe-area-inset-bottom));
   color-scheme: dark;
   transition: --accent 1.1s var(--ease-tint) 0.1s; /* = ERA_CHANGE.tint / tintAt */

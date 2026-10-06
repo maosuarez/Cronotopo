@@ -16,15 +16,17 @@ export function CameraRig() {
   const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
   const camera = useThree((s) => s.camera);
   const reduced = useReducedMotion();
-  const appliedOffset = useRef("");
+  const applied = useRef({ f: -1, w: 0, h: 0 });
 
   // Shifts the projection so the focus point clears the UI panel (see FRAMING). Cheap: only touches
   // the camera when factor or viewport change; resizes are picked up on the next frame.
   useFrame(({ camera: cam, size }) => {
     const f = sceneMotion.frameShift;
-    const key = `${f}|${size.width}|${size.height}`;
-    if (key === appliedOffset.current || !("setViewOffset" in cam)) return;
-    appliedOffset.current = key;
+    const a = applied.current;
+    if ((f === a.f && size.width === a.w && size.height === a.h) || !("setViewOffset" in cam)) return;
+    a.f = f;
+    a.w = size.width;
+    a.h = size.height;
     const persp = cam as PerspectiveCamera;
     if (f < 0.0005) {
       persp.clearViewOffset();

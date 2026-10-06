@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import type { Confidence, HistoricalElement } from "@/domain/types";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { CSS_EASE, UI_MOTION } from "@/lib/choreography";
+import { CSS_EASE, UI_MOTION } from "@/lib/motionTokens";
 import { categoryMeta } from "./categoryMeta";
 
 const confidenceMeta: Record<Exclude<Confidence, "high">, { label: string; filled: number; note: string }> = {

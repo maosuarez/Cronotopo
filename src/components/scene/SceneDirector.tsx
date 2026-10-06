@@ -21,10 +21,13 @@ import { cameraDriverRef } from "./sceneState";
 const focusDistanceFor = (eraId: string) =>
   Math.min(CAMERA.focusDistance, Math.max(CAMERA.minDistance + 0.05, eraPoseOf(eraId).distance - 0.3));
 
-const eraPoseOf = (eraId: string) => {
-  const era = getEra(eraId)!;
-  return eraFramingPose(era.locations.map((l) => l.coordinates));
+const requireEra = (eraId: string) => {
+  const era = getEra(eraId);
+  if (!era) throw new Error(`SceneDirector: unknown era "${eraId}"`);
+  return era;
 };
+
+const eraPoseOf = (eraId: string) => eraFramingPose(requireEra(eraId).locations.map((l) => l.coordinates));
 
 /**
  * Renders nothing. Translates store changes into choreography timelines.
@@ -77,6 +80,7 @@ export function SceneDirector() {
         makeCtx(gen, extra),
         locationFocusPose(found.location.coordinates, { distance: focusDistanceFor(found.era.id) }),
         index,
+        found.era.accentColor,
       );
     };
 
@@ -105,14 +109,16 @@ export function SceneDirector() {
           createEraChangeTimeline(
             { ...ctx, swapEra: () => atlas.getState().setDisplayedEra(eraId) },
             eraPoseOf(eraId),
-            getEra(eraId)!.accentColor,
+            requireEra(eraId).accentColor,
           ),
         selection ? selectThen(gen, selection) : undefined,
       );
 
     const start = (run: (gen: number) => void) => {
-      timeline?.kill();
+      // Bump first: kill() fires onInterrupt synchronously and the stale guard must already reject it.
       generation += 1;
+      timeline?.kill();
+      timeline = null;
       run(generation);
     };
 
@@ -121,7 +127,7 @@ export function SceneDirector() {
     start((gen) =>
       chain(
         gen,
-        (ctx) => createIntroTimeline(ctx, eraPoseOf(activeEraId), getEra(activeEraId)!.accentColor),
+        (ctx) => createIntroTimeline(ctx, eraPoseOf(activeEraId), requireEra(activeEraId).accentColor),
         selectedLocationId ? selectThen(gen, selectedLocationId) : undefined,
       ),
     );
@@ -144,7 +150,7 @@ export function SceneDirector() {
         });
       } else {
         start((gen) => {
-          timeline = createCloseTimeline(makeCtx(gen), eraPoseOf(state.activeEraId));
+          timeline = createCloseTimeline(makeCtx(gen), eraPoseOf(state.activeEraId), requireEra(state.activeEraId).accentColor);
         });
       }
     });
@@ -153,6 +159,7 @@ export function SceneDirector() {
       unsubscribe();
       generation += 1;
       timeline?.kill();
+      timeline = null;
       atlas.getState().setTransitioning(false);
     };
   }, [ready]);

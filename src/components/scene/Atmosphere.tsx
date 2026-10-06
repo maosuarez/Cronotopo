@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { AdditiveBlending, BackSide, Color, FrontSide, type Mesh, ShaderMaterial } from "three";
 import { sceneMotion } from "@/lib/choreography";
@@ -58,6 +58,13 @@ function makeMaterial(fragmentShader: string, side: typeof BackSide | typeof Fro
 export function Atmosphere() {
   const halo = useMemo(() => makeMaterial(haloFragment, BackSide), []);
   const rim = useMemo(() => makeMaterial(rimFragment, FrontSide), []);
+  useEffect(
+    () => () => {
+      halo.dispose();
+      rim.dispose();
+    },
+    [halo, rim],
+  );
   const haloMesh = useRef<Mesh>(null);
   const rimMesh = useRef<Mesh>(null);
   const color = useRef(new Color());

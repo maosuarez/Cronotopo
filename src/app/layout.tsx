@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
+import { eras } from "@/data/index";
 import "./globals.css";
 
 const serif = Cormorant_Garamond({
@@ -28,7 +29,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${serif.variable} ${sans.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      className={`${serif.variable} ${sans.variable} h-full antialiased`}
+      style={{ "--era-count": eras.length } as React.CSSProperties}
+    >
       <body className="min-h-full">{children}</body>
     </html>
   );

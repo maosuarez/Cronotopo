@@ -5,7 +5,7 @@ import { getEra } from "@/data/index";
 import type { HistoricalLocation } from "@/domain/types";
 import { useIsDesktop } from "@/hooks/useMediaQuery";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { CSS_EASE, UI_MOTION } from "@/lib/choreography";
+import { CSS_EASE, UI_MOTION } from "@/lib/motionTokens";
 import { formatYear } from "@/lib/years";
 import { useAtlasStore } from "@/store/useAtlasStore";
 import { ChromeIn } from "./ChromeIn";

@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { CSS_EASE, INTRO, UI_MOTION } from "@/lib/choreography";
+import { CSS_EASE, INTRO, UI_MOTION } from "@/lib/motionTokens";
 import { useAtlasStore } from "@/store/useAtlasStore";
 
 const LoaderProgress = dynamic(() => import("./LoaderProgress"), { ssr: false, loading: () => null });
