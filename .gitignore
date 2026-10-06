@@ -45,3 +45,4 @@ next-env.d.ts
 /playwright-report/
 /tests/motion-frames/
 /tests/motion-videos/
+/tests/scene-frames/

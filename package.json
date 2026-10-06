@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:motion": "playwright test --config playwright.motion.config.ts",
-    "validate:data": "tsx scripts/validate-data.ts"
+    "validate:data": "tsx scripts/validate-data.ts",
+    "test:scenes": "node scripts/test-scenes.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.9",

@@ -1,14 +1,20 @@
 /**
  * Scene registry: maps a HistoricalElement id to its animated scene.
  *
- * Adding a scene = create `src/scenes/<name>/{beats.ts,index.tsx}` and append an entry here.
+ * Adding a scene = create `src/scenes/<name>/{beats.ts,meta.ts,index.tsx}` and append its `meta.scene` here.
  * Metadata (title, beats, duration) is static and light — `beats.ts` must not import React/three —
  * while the component is code-split through `load` and only fetched when the player opens.
  */
 import { getLocation } from "@/data/index";
 import type { HistoricalEra, HistoricalLocation } from "@/domain/types";
 import { PLACEHOLDER_DURATION, placeholderBeats } from "./placeholder/beats";
+import { scene as athensParthenon } from "./athens-parthenon/meta";
+import { scene as gizaPyramid } from "./giza-pyramid/meta";
+import { scene as mainzPress } from "./mainz-press/meta";
+import { scene as manchesterSteam } from "./manchester-steam/meta";
+import { scene as pompeiiVesuvius } from "./pompeii-vesuvius/meta";
 import type { HistoricalScene } from "./types";
+import { scene as urukWriting } from "./uruk-writing/meta";
 
 export const scenes: readonly HistoricalScene[] = [
   {
@@ -20,6 +26,12 @@ export const scenes: readonly HistoricalScene[] = [
     beats: placeholderBeats,
     load: () => import("./placeholder"),
   },
+  urukWriting,
+  gizaPyramid,
+  athensParthenon,
+  pompeiiVesuvius,
+  mainzPress,
+  manchesterSteam,
 ];
 
 const byElementId = new Map(scenes.map((scene) => [scene.elementId, scene]));

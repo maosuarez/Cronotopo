@@ -146,6 +146,9 @@ Ajuste S0: el `technology` de Mánchester era "Canal de Bridgewater"; se sustitu
 ### Decisiones
 - Estado del reproductor en el store (`sceneElementId`), se limpia al cambiar era/ubicación o cerrar panel; Esc del reproductor en fase *capture* con `preventDefault` para no cerrar también el panel.
 - Por indicación del usuario, las escenas 2–6 se delegan a Opus 5.5 con libertad creativa completa (planos, ritmo, recursos visuales); solo se fijan contrato técnico, hechos del guion y reglas editoriales.
+- Por petición del usuario, las 6 escenas (incluida Uruk) se construyen en paralelo con agentes Opus en worktrees aislados; Uruk deja de ser escena de referencia previa: el estándar común es el kit + `KitPreview`, y la unificación se hace en S5. Pompeya es la pieza insignia ("mucho más impactante").
+- Cada escena expone `src/scenes/<id>/meta.ts` (`scene: HistoricalScene`) importado por el registry → los agentes no editan archivos compartidos.
+- `pnpm test:scenes [-- <id>]` (playwright.scenes.config.ts, puerto `SCENES_PORT`): frames en el punto medio de cada beat y cada 150 ms ±0,6 s en cada transición → `tests/scene-frames/<id>/` con `index.json` (tiempo, caption, visual).
 - Capa z nueva `--z-player: 50` (entre caption y loader).
 - `openScene(elementId)` selecciona en la misma actualización la ubicación/era del elemento si no es la seleccionada (invariante: la escena siempre pertenece a `selectedLocationId`); ids sin escena se ignoran. `selectLocation` de la misma ubicación no cierra la escena.
 - URL: `scene` solo válido con `loc` válido que contenga el elemento y tenga escena. El deep link abre el reproductor tras `sceneReady` (el globo en `frameloop="never"` no llegaría nunca al primer frame); la URL canónica conserva `scene` mientras tanto.
