@@ -43,7 +43,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - [x] F0 Setup
 - [x] F1 Dominio y utilidades
 - [ ] F2 Contenido (300 elementos)
-- [ ] F3 Escena 3D (+ Coreografía)
+- [x] F3 Escena 3D (+ Coreografía)
 - [ ] F4 Estado, cámara y URL
 - [ ] F5 Interfaz
 - [ ] F6 QA (e2e + motion)
@@ -53,6 +53,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 ## Estado
 - F0 ✅ scaffold, deps exactas, scripts, `output: 'export'`, build+lint verdes.
 - F1 ✅ types/schema/sceneRegistry, lib geo/years/camera (puro), 34 tests verdes. (0,0)→+X, lon+90→−Z, polo N→+Y.
+- F3 ✅ escena (globo Blue Marble, atmósfera fresnel tintable, barrido temporal, estrellas, marcadores, arcos trazables, CameraRig+OrbitControls, SceneDirector con las 4 timelines). `next build` ok; captura era 1 revisada (marcadores en Etiopía/Sudáfrica/Francia). Commit antes que F2 porque el contenido corre en paralelo.
 
 ## Decisiones
 - React 19.2.8: la que fija create-next-app 16.3.8; compatible con R3F 9.8 (`>=19 <19.4`) y drei 10.
@@ -65,10 +66,26 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - `rangeLabel?` opcional en era (era 20: "1900 – presente", endYear 2026).
 - Formato de años: a.C. siempre; d.C. solo < 1000 (117 d.C., 1969); separador de miles solo ≥ 10.000.
 - Prehistoria: yearLabel en "años AP" cuando la fuente data así.
+- Idle rotation = `OrbitControls.autoRotate` (la cámara orbita; el globo no rota → posiciones de marcadores fijas en mundo).
+- Era mostrada (`displayedEraId`) separada de `activeEraId`: cambia en el `swapEra` de la timeline (t≈0,4 s), para que la salida de la era anterior se vea.
+- Starfield: radio 25/profundidad 20 (el shader de drei duplica la distancia efectiva y con 50/40 quedaban fuera de `far`).
 - `@types/node` 24 (peer de Vitest 5).
 
 ## Coreografía
+Fuente única: `src/lib/choreography.ts` (constantes + 4 timelines GSAP con nombre). La escena lee el objeto mutable `sceneMotion` en `useFrame`; solo las timelines escriben en él. La UI 2D (Framer Motion) usa `UI_MOTION` del mismo archivo. Un `SceneDirector` escucha el store y lanza la timeline del momento, matando la anterior (interrumpible: los vuelos capturan la pose inicial al empezar).
+Principio: lo importante se mueve primero y más (cámara > marcadores > arcos > UI). Curvas: viaje `power2.inOut`, llegada `expo.out`, salida `power2.in`, pop `back.out(2.2)`, trazo `power2.out`, tinte `sine.inOut`.
+
+1. **Carga inicial (`intro`, ≈3,2 s)** — LoadingScreen se funde 0,6 s cuando la textura está lista. t=0 estrellas 0→1 (1,8 s), cámara dolly desde distancia 7,5 al encuadre de la era 1 (2,6 s `expo.out`, frena con peso). t=0,2 atmósfera 0→1 (1,4 s). t=1,5 marcadores pop escalonado (0,7 s, stagger 0,12). +0,25 arcos se trazan (0,9 s, stagger 0,15). t=1,7 UI (header, timeline) sube escalonada (0,8 s, stagger 0,12). Rotación idle tras la intro.
+2. **Cambio de era (`eraChange`, ≈2,6–3,2 s)** — t=0 marcadores encogen/funden escalonados (0,35 s `power2.in`), arcos se apagan (0,3 s). t=0,1 tinte de atmósfera/luz/acento hacia el `accentColor` nuevo (1,1 s) + barrido temporal (banda luminosa que recorre el globo de polo a polo, 1,3 s, fuerza sube-baja). t=0,15 vuelo de cámara al centroide de la nueva era (1,6–2,2 s según ángulo, se aleja hasta 0,9 a mitad de trayectos largos). t=0,4 swap de datos. Al 62 % del vuelo entran los marcadores nuevos (pop) y después los arcos. Header: sale 0,25 s, entra 0,55 s con 0,35 s de retardo.
+3. **Selección (`select`, ≈1,6–2,2 s)** — t=0 vuelo a la ubicación (distancia 1,75) + otros marcadores se atenúan a 0,3 (0,45 s). Al 55 % del vuelo, realce del elegido (anillo + brillo, `back.out`). Panel entra a 0,95 s (0,65 s `expo.out`, mientras la cámara frena), tarjetas escalonadas 0,07 s desde panel+0,25 s.
+4. **Cierre (`close`, ≈1,5 s)** — Panel sale en bloque 0,3 s `power2.in`. t=0 desrealce (0,35 s). t=0,12 cámara vuelve al encuadre de la era (1,2–1,6 s, poca elevación). t=0,35 marcadores recuperan opacidad (0,5 s). Idle se reanuda 4 s después de la última interacción.
+
+**Reduced motion**: vuelos → corte con fundido del canvas (0,18 s out / 0,28 s in); marcadores y arcos solo funden (sin pop ni trazo); tinte 0,3 s; sin barrido, sin pulso, sin rotación idle; panel y tarjetas solo opacidad 0,2 s sin desplazamiento ni stagger.
+
+### Iteraciones de pulido
+(pendiente F6.5)
 
 ## Bloqueos
 
 ## Fuentes
+- Textura: NASA Visible Earth, Blue Marble Next Generation (dic. 2004, topografía+batimetría), `world.topo.bathy.200412.3x5400x2700.jpg` → redimensionada a 2048×1024 (344 KB) en `public/textures/earth-day-2048.jpg`. Dominio público. https://visibleearth.nasa.gov/images/73909
