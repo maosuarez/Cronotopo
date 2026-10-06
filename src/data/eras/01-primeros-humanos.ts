@@ -29,7 +29,7 @@ const era: HistoricalEra = {
           summary:
             "Secuencia de sedimentos fluviales y deltaicos junto al río Omo. Sus capas, separadas por cenizas volcánicas datables, conservan fósiles humanos y herramientas de piedra de la Edad de Piedra Media.",
           sourceUrl: "https://en.wikipedia.org/wiki/Omo_Kibish_Formation",
-          confidence: "high",
+          confidence: "medium",
         },
         {
           id: "primeros-humanos--omo-kibish--person",
@@ -40,7 +40,7 @@ const era: HistoricalEra = {
           summary:
             "No hay individuos con nombre: Omo I es un cráneo parcial y otros restos hallados en 1967 por el equipo de Richard Leakey. Es uno de los Homo sapiens más antiguos identificados.",
           sourceUrl: "https://en.wikipedia.org/wiki/Omo_remains",
-          confidence: "high",
+          confidence: "medium",
         },
         {
           id: "primeros-humanos--omo-kibish--technology",
@@ -93,7 +93,7 @@ const era: HistoricalEra = {
           summary:
             "Abrigo costero en un acantilado calizo del sur de Sudáfrica. Las excavaciones dirigidas por Christopher Henshilwood la convirtieron en un sitio clave para estudiar el origen del comportamiento moderno.",
           sourceUrl: "https://es.wikipedia.org/wiki/Cueva_de_Blombos",
-          confidence: "high",
+          confidence: "medium",
         },
         {
           id: "primeros-humanos--blombos--person",
@@ -112,9 +112,9 @@ const era: HistoricalEra = {
           yearLabel: "c. 100.000 años AP",
           year: -98000,
           summary:
-            "Dos conchas de abulón con una mezcla de ocre, hueso y carbón, junto a piedras para moler. Publicado en 2011, es el taller de pigmentos más antiguo conocido.",
+            "Dos conchas de abulón con una mezcla de ocre, hueso y carbón, junto a piedras para moler. Publicado en 2011, es uno de los talleres de pigmentos más antiguos conocidos.",
           sourceUrl: "https://es.wikipedia.org/wiki/Cueva_de_Blombos",
-          confidence: "high",
+          confidence: "medium",
         },
         {
           id: "primeros-humanos--blombos--culture",
@@ -125,7 +125,7 @@ const era: HistoricalEra = {
           summary:
             "Conchas de pequeños caracoles marinos perforadas y con marcas de uso, probablemente ensartadas como adorno personal. Figuran entre los ornamentos más antiguos documentados.",
           sourceUrl: "https://es.wikipedia.org/wiki/Cueva_de_Blombos",
-          confidence: "high",
+          confidence: "medium",
         },
         {
           id: "primeros-humanos--blombos--event",
@@ -134,9 +134,9 @@ const era: HistoricalEra = {
           yearLabel: "c. 73.000 años AP",
           year: -71000,
           summary:
-            "Alguien trazó líneas cruzadas con un lápiz de ocre sobre una lasca de silcreta. El hallazgo, publicado en 2018, es el dibujo más antiguo identificado hasta ahora.",
+            "Alguien trazó líneas cruzadas con un lápiz de ocre sobre una lasca de silcreta. El hallazgo, publicado en 2018, es el dibujo más antiguo identificado hasta ahora atribuido a Homo sapiens.",
           sourceUrl: "https://es.wikipedia.org/wiki/Cueva_de_Blombos",
-          confidence: "high",
+          confidence: "medium",
         },
       ],
     },
@@ -158,7 +158,7 @@ const era: HistoricalEra = {
           summary:
             "Cavidad caliza sobre el valle del Ardèche, cerca del arco natural de Pont d'Arc. Declarada Patrimonio de la Humanidad en 2014; el público visita una réplica, la Caverne du Pont d'Arc.",
           sourceUrl: "https://es.wikipedia.org/wiki/Cueva_de_Chauvet",
-          confidence: "high",
+          confidence: "medium",
         },
         {
           id: "primeros-humanos--chauvet--person",
@@ -178,7 +178,7 @@ const era: HistoricalEra = {
           summary:
             "Los artistas raspaban la pared para aclararla, pintaban con carbón vegetal y ocre y difuminaban el trazo para sugerir volumen y movimiento, aprovechando el relieve de la roca.",
           sourceUrl: "https://es.wikipedia.org/wiki/Cueva_de_Chauvet",
-          confidence: "high",
+          confidence: "medium",
         },
         {
           id: "primeros-humanos--chauvet--culture",
@@ -188,7 +188,7 @@ const era: HistoricalEra = {
           summary:
             "Leones, rinocerontes, caballos y mamuts dominan los paneles, una fauna poco habitual en otras cuevas. Su calidad obligó a revisar la idea de que el arte rupestre evolucionó de lo simple a lo complejo.",
           sourceUrl: "https://es.wikipedia.org/wiki/Auriñaciense",
-          confidence: "high",
+          confidence: "medium",
         },
         {
           id: "primeros-humanos--chauvet--event",

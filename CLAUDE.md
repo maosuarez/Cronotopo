@@ -42,7 +42,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 ## Tareas (fases)
 - [x] F0 Setup
 - [x] F1 Dominio y utilidades
-- [ ] F2 Contenido (300 elementos)
+- [x] F2 Contenido (300 elementos)
 - [x] F3 Escena 3D (+ Coreografía)
 - [x] F4 Estado, cámara y URL
 - [x] F5 Interfaz
@@ -53,6 +53,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 ## Estado
 - F0 ✅ scaffold, deps exactas, scripts, `output: 'export'`, build+lint verdes.
 - F1 ✅ types/schema/sceneRegistry, lib geo/years/camera (puro), 34 tests verdes. (0,0)→+X, lon+90→−Z, polo N→+Y.
+- F2 ✅ 20 eras / 60 ubicaciones / 300 elementos, `validate:data` verde. Auditoría adversarial aplicada (4 errores factuales, ~16 matices, coordenadas de Pataliputra/Tebas/Lisboa/Londres/Pittsburgh).
 - F3 ✅ escena (globo Blue Marble, atmósfera fresnel tintable, barrido temporal, estrellas, marcadores, arcos trazables, CameraRig+OrbitControls, SceneDirector con las 4 timelines). `next build` ok; captura era 1 revisada (marcadores en Etiopía/Sudáfrica/Francia). Commit antes que F2 porque el contenido corre en paralelo.
 - F4 ✅ store (+`displayedEraId`, `sceneReady`), director robusto a interrupciones, `frameShift` (setViewOffset) para encuadrar a la izquierda del panel / arriba del bottom sheet, `useUrlSync` + `lib/url.ts`, tests store/url, e2e deep link verde.
 - F5 ✅ tokens en `globals.css` (@theme, `--accent` con @property), Timeline (listbox, ←/→ Home/End foco, Enter/Espacio confirma), EraHeader, LocationList, InfoPanel (panel/bottom sheet), ElementCard, LoadingScreen, AccentSync, Announcer. Capturas 1440/390 revisadas; sin scroll horizontal (360/390/1440). Luz principal sigue a la cámara (siempre se ve el hemisferio iluminado).
@@ -74,6 +75,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - Starfield: radio 25/profundidad 20 (el shader de drei duplica la distancia efectiva y con 50/40 quedaban fuera de `far`).
 - Timeline: foco ≠ selección (cada cambio de era cuesta ~3 s de coreografía). Grupos con ≤2 eras usan etiqueta corta visible ("Contemporánea"), nombre accesible completo.
 - InfoPanel `role=dialog aria-modal=false`; en móvil con el sheet abierto timeline y chips quedan `inert`.
+- Política de confianza: todo `yearLabel` con "c." lleva confidence ≥ medium (80 elementos bajados de high a medium tras la auditoría), según la regla editorial literal.
 - `@types/node` 24 (peer de Vitest 5).
 
 ## Coreografía
