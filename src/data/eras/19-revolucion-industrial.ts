@@ -44,13 +44,12 @@ const era: HistoricalEra = {
         {
           id: "revolucion-industrial--manchester--technology",
           category: "technology",
-          name: "Canal de Bridgewater",
-          yearLabel: "1761",
-          year: 1761,
+          name: "Máquina de vapor y fábrica textil",
+          yearLabel: "c. 1780 – 1830",
           summary:
-            "Encargado por el duque de Bridgewater para llevar el carbón de sus minas de Worsley a Mánchester. Abarató el combustible de la ciudad y suele considerarse el inicio de la era de los canales en Gran Bretaña.",
-          sourceUrl: "https://es.wikipedia.org/wiki/Canal_de_Bridgewater",
-          confidence: "high",
+            "Las máquinas rotativas de Boulton y Watt, con condensador separado, movían mediante ejes y correas filas enteras de mules de hilar. Las fábricas de algodón ya no dependían de los ríos y se concentraron en Mánchester.",
+          sourceUrl: "https://en.wikipedia.org/wiki/Watt_steam_engine",
+          confidence: "medium",
         },
         {
           id: "revolucion-industrial--manchester--culture",

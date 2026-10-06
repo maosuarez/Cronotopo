@@ -109,3 +109,40 @@ Principio: lo importante se mueve primero y más (cámara > marcadores > arcos >
 
 ## Fuentes
 - Textura: NASA Visible Earth, Blue Marble Next Generation (dic. 2004, topografía+batimetría), `world.topo.bathy.200412.3x5400x2700.jpg` → redimensionada a 2048×1024 (344 KB) en `public/textures/earth-day-2048.jpg`. Dominio público. https://visibleearth.nasa.gov/images/73909
+
+## Escenas
+Plan maestro: `prompt-escenas-historicas.md` (no versionado). Al pulsar una tarjeta con escena se abre un "video" animado 100 % con código (R3F procedural, sin assets) que muestra lo que dice el texto; cada subtítulo corresponde a lo que se ve.
+
+**Contrato** (`src/scenes/types.ts`): `SceneBeat {id,start,end,caption ≤140,visual,hypothesis?}`, `HistoricalScene {id,elementId,title,yearLabel,duration,beats,load}`, `SceneProps {time, quality}`. Determinismo: el estado visual es función pura de `time` (timeline GSAP pausada + `seek`, PRNG con semilla; nada de `delta`).
+
+**Estructura**: `src/scenes/registry.ts` (elementId → escena; absorbe `domain/sceneRegistry.ts`), `src/scenes/kit/` (primitivas compartidas), `src/scenes/<escena>/{index.tsx,beats.ts}`, `src/components/player/{ScenePlayer,PlayerControls,Captions,BeatScrubber}.tsx`. URL `&scene=<elementId>`; `?debug=1` → `window.__scene`.
+
+**Mapeo elemento → escena**
+| # | Escena | elementId | Título |
+|---|---|---|---|
+| 1 | uruk-writing | `mesopotamia--uruk--technology` (Escritura protocuneiforme) | Nace la escritura |
+| 2 | giza-pyramid | `egipto-antiguo--giza--landmark` (Gran Pirámide de Guiza) | Construir una montaña de piedra |
+| 3 | athens-parthenon | `grecia-clasica--atenas--landmark` (Partenón) | El templo de Atenea |
+| 4 | pompeii-vesuvius | `roma--pompeya--event` (Erupción del Vesubio) | El día que desapareció Pompeya |
+| 5 | mainz-press | `renacimiento--maguncia--technology` (Imprenta de tipos móviles) | La máquina que multiplicó los libros |
+| 6 | manchester-steam | `revolucion-industrial--manchester--technology` (Máquina de vapor y fábrica textil) | La ciudad de las chimeneas |
+Ajuste S0: el `technology` de Mánchester era "Canal de Bridgewater"; se sustituyó por "Máquina de vapor y fábrica textil" (Boulton & Watt, c. 1780–1830, medium).
+
+**Fases**
+- [x] S0 Reconocimiento
+- [ ] S1 Contrato y reproductor
+- [ ] S2 Kit de escena
+- [ ] S3 Escena de referencia: Uruk
+- [ ] S4 Escenas 2–6
+- [ ] S5 Unificación y pulido
+- [ ] S6 Revisión final
+
+### Estado
+- S0 ✅ mapeo hecho (store, URL sync, InfoPanel/ElementCard, Experience, motionTokens, tests); 5/6 elementos existían, Mánchester ajustado; `validate:data` verde. Instalado `@react-three/postprocessing` 3.1.3.
+
+### Decisiones
+- Estado del reproductor en el store (`sceneElementId`), se limpia al cambiar era/ubicación o cerrar panel; Esc del reproductor en fase *capture* con `preventDefault` para no cerrar también el panel.
+- Capa z nueva `--z-player: 50` (entre caption y loader).
+- `domain/sceneRegistry.ts` (vacío, por locationId) se elimina y lo sustituye `src/scenes/registry.ts` por elementId; `ZoomLevel`/`modelRef` siguen en `domain/types.ts`.
+
+### Bloqueos
