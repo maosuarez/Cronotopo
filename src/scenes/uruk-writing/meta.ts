@@ -8,5 +8,5 @@ export const scene: HistoricalScene = {
   yearLabel: "c. 3400 – 3000 a.C.",
   duration: URUK_BEATS[URUK_BEATS.length - 1].end,
   beats: URUK_BEATS,
-  load: () => import("../placeholder"),
+  load: () => import("./index"),
 };

@@ -134,7 +134,7 @@ Ajuste S0: el `technology` de Mánchester era "Canal de Bridgewater"; se sustitu
 - [x] S0 Reconocimiento
 - [x] S1 Contrato y reproductor
 - [x] S2 Kit de escena
-- [ ] S3 Escena de referencia: Uruk
+- [x] S3 Escena de referencia: Uruk (construida por agente Opus en paralelo; integrada antes por urgencia de presentación)
 - [ ] S4 Escenas 2–6
 - [ ] S5 Unificación y pulido
 - [ ] S6 Revisión final
