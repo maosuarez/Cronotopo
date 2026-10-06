@@ -41,7 +41,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 
 ## Tareas (fases)
 - [x] F0 Setup
-- [ ] F1 Dominio y utilidades
+- [x] F1 Dominio y utilidades
 - [ ] F2 Contenido (300 elementos)
 - [ ] F3 Escena 3D (+ Coreografía)
 - [ ] F4 Estado, cámara y URL
@@ -52,12 +52,19 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 
 ## Estado
 - F0 ✅ scaffold, deps exactas, scripts, `output: 'export'`, build+lint verdes.
+- F1 ✅ types/schema/sceneRegistry, lib geo/years/camera (puro), 34 tests verdes. (0,0)→+X, lon+90→−Z, polo N→+Y.
 
 ## Decisiones
 - React 19.2.8: la que fija create-next-app 16.3.8; compatible con R3F 9.8 (`>=19 <19.4`) y drei 10.
 - e2e sirven el export estático (`out/`) con `serve` en :4173; requiere `pnpm build` previo.
 - Sincronía URL con `history.pushState/replaceState` + `popstate` (sin `useSearchParams`, evita Suspense/CSR bailout en export estático y rerenders del router).
 - `AGENTS.md` lo genera Next 16 y se versiona tal cual (no es documentación propia).
+- Validación zod en build: `pnpm build` = `validate-data && next build`; `data/index.ts` no importa zod (fuera del bundle cliente).
+- Ids: location `${eraId}--${slug}`, element `${locationId}--${category}` → unicidad trivial.
+- Coordenadas 2–4 decimales verificadas numéricamente: se exige que no terminen en 0 (JS pierde ceros finales).
+- `rangeLabel?` opcional en era (era 20: "1900 – presente", endYear 2026).
+- Formato de años: a.C. siempre; d.C. solo < 1000 (117 d.C., 1969); separador de miles solo ≥ 10.000.
+- Prehistoria: yearLabel en "años AP" cuando la fuente data así.
 - `@types/node` 24 (peer de Vitest 5).
 
 ## Coreografía
