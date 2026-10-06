@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type gsap from "gsap";
+import gsap from "gsap";
 import { getEra, getLocation } from "@/data/index";
 import {
   CAMERA,
@@ -17,6 +17,10 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useAtlasStore } from "@/store/useAtlasStore";
 import { cameraDriverRef } from "./sceneState";
 
+/** Never zoom out when focusing: tight eras (e.g. Greece) are framed closer than the default focus. */
+const focusDistanceFor = (eraId: string) =>
+  Math.min(CAMERA.focusDistance, Math.max(CAMERA.minDistance + 0.05, eraPoseOf(eraId).distance - 0.3));
+
 const eraPoseOf = (eraId: string) => {
   const era = getEra(eraId)!;
   return eraFramingPose(era.locations.map((l) => l.coordinates));
@@ -31,6 +35,16 @@ export function SceneDirector() {
   const reduced = useReducedMotion();
   const reducedRef = useRef(reduced);
   const ready = useAtlasStore((s) => s.sceneReady);
+
+  // `?debug=1`: lets motion tests slow the 3D timelines down to capture denser frame sequences.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("debug") !== "1") return;
+    const w = window as typeof window & { __atlasDebug?: { timeScale: (s: number) => void } };
+    w.__atlasDebug = { timeScale: (s) => void gsap.globalTimeline.timeScale(s) };
+    return () => {
+      delete w.__atlasDebug;
+    };
+  }, []);
 
   useEffect(() => {
     reducedRef.current = reduced;
@@ -61,7 +75,7 @@ export function SceneDirector() {
       const index = found.era.locations.findIndex((l) => l.id === locationId);
       return createSelectTimeline(
         makeCtx(gen, extra),
-        locationFocusPose(found.location.coordinates, { distance: CAMERA.focusDistance }),
+        locationFocusPose(found.location.coordinates, { distance: focusDistanceFor(found.era.id) }),
         index,
       );
     };

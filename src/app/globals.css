@@ -120,7 +120,7 @@ body::after {
   background-size: 100% 100%, 160px 160px;
 }
 
-:focus-visible {
+:focus-visible:not([tabindex="-1"]) {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;
   border-radius: inherit;

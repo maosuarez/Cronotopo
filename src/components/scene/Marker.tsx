@@ -16,6 +16,9 @@ const meshRaycast = Mesh.prototype.raycast;
 
 type Props = { location: HistoricalLocation; index: number };
 
+/** Camera-to-marker distance at which markers render at their modelled size (era framing ≈ 2.8). */
+const MARKER_REF_DISTANCE = 1.8;
+
 export function Marker({ location, index }: Props) {
   const position = useMemo(
     () => latLonToVector3(location.coordinates.lat, location.coordinates.lon, MARKER_RADIUS),
@@ -59,7 +62,11 @@ export function Marker({ location, index }: Props) {
     const opacity = m.opacity * facing;
     const visible = opacity > 0.01 && m.scale > 0.001;
 
-    if (root.current) root.current.visible = visible;
+    if (root.current) {
+      root.current.visible = visible;
+      // Roughly constant on-screen size: markers shrink as the camera approaches the surface.
+      root.current.scale.setScalar(Math.min(1, Math.max(0.25, camera.position.distanceTo(position) / MARKER_REF_DISTANCE)));
+    }
     if (hit.current) hit.current.raycast = visible && dot > 0 ? meshRaycast : noRaycast;
     if (!visible) return;
 

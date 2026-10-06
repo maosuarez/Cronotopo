@@ -39,9 +39,9 @@ export function flightDuration(
 export function eraFramingPose(
   coords: LatLon[],
   {
-    baseDistance = 2.8,
-    spreadFactor = 1.2,
-    minDistance = 2.2,
+    baseDistance = 1.45,
+    spreadFactor = 2.4,
+    minDistance = 1.6,
     maxDistance = 4,
   }: { baseDistance?: number; spreadFactor?: number; minDistance?: number; maxDistance?: number } = {},
 ): CameraPose {
@@ -50,7 +50,7 @@ export function eraFramingPose(
     0,
     ...coords.map((c) => angleBetweenUnit(direction, latLonToVector3(c.lat, c.lon, 1))),
   );
-  const distance = Math.min(maxDistance, Math.max(minDistance, baseDistance + spread * spreadFactor - 0.5));
+  const distance = Math.min(maxDistance, Math.max(minDistance, baseDistance + spread * spreadFactor));
   return { direction, distance };
 }
 

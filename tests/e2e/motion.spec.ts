@@ -10,7 +10,12 @@ import { eras } from "../../src/data/index";
  * page.screenshot() takes 3+ s per frame under SwiftShader (stalls the animation), so frames come from the
  * compositor screencast instead (one frame per visual update, ~real time);
  * the real timestamp of each frame (ms since trigger) goes to timings.json.
+ * Software WebGL is too slow for ~100 ms cadence in real time, so moments after the intro run with the
+ * 3D timelines slowed down (`?debug=1` → window.__atlasDebug.timeScale(TIME_SCALE)); timings.json also
+ * stores `animMs` (= ms × TIME_SCALE), the choreography time of each frame. 2D UI (Framer) is not slowed.
+ * Triggers are dispatched in-page (no actionability waits) so t=0 is exact.
  */
+const TIME_SCALE = 0.25;
 const VIEWPORT = { width: 1440, height: 900 };
 const FRAME = { width: 720, height: 450 };
 const TAIL_MS = 400;
@@ -19,12 +24,12 @@ const root = path.resolve(__dirname, "..");
 /** `mark()` sets t=0 (call right before the trigger); frames captured earlier get negative ms (pre-roll). */
 type Capture = { mark: () => void; stop: () => Promise<void> };
 
-async function startFrames(page: Page, name: string): Promise<Capture> {
+async function startFrames(page: Page, name: string, scale = 1): Promise<Capture> {
   let t0 = 0; // set by mark(); stays 0 until then
   let marked = false;
   const abs: number[] = [];
   const dir = path.join(root, "motion-frames", name);
-  const timings: { file: string; ms: number }[] = [];
+  const timings: { file: string; ms: number; animMs?: number }[] = [];
   const writes: Promise<void>[] = [];
   let session: CDPSession | undefined;
   await (async () => {
@@ -51,7 +56,10 @@ async function startFrames(page: Page, name: string): Promise<Capture> {
       await Promise.all(writes);
       await session!.detach().catch(() => {});
       if (!marked) t0 = abs[0] ?? 0;
-      timings.forEach((t, i) => (t.ms = abs[i] - t0));
+      timings.forEach((t, i) => {
+        t.ms = abs[i] - t0;
+        t.animMs = Math.round(t.ms * scale);
+      });
       writeFileSync(path.join(dir, "timings.json"), JSON.stringify(timings, null, 2));
       const post = timings.filter((t) => t.ms >= 0);
       const gaps = post.slice(1).map((t, i) => t.ms - post[i].ms);
@@ -79,18 +87,22 @@ const idle = (page: Page) =>
   page.waitForSelector('[data-testid="atlas-state"][data-transitioning="false"]', { state: "attached", timeout: 30_000 });
 
 async function ready(page: Page, query = "") {
-  await page.goto(`/${query}`);
+  await page.goto(`/${query ? `${query}&` : "?"}debug=1`);
   await page.waitForSelector('html[data-scene-ready="true"]', { timeout: 60_000 });
   await idle(page);
   // let the intro and chrome settle before the moment under test
   await page.waitForTimeout(4_500);
+  await page.evaluate((s) => (window as unknown as { __atlasDebug: { timeScale: (n: number) => void } }).__atlasDebug.timeScale(s), TIME_SCALE);
 }
+
+const clickNow = (page: Page, selector: string) =>
+  page.evaluate((sel) => (document.querySelector(sel) as HTMLElement).click(), selector);
 
 async function transitionDone(page: Page) {
   // Wait for the store to flag the transition (it may already be running), then for it to finish.
   await page.waitForSelector('[data-testid="atlas-state"][data-transitioning="true"]', { state: "attached", timeout: 3_000 }).catch(() => {});
-  await idle(page);
-  await page.waitForTimeout(TAIL_MS);
+  await page.waitForSelector('[data-testid="atlas-state"][data-transitioning="false"]', { state: "attached", timeout: 60_000 });
+  await page.waitForTimeout(TAIL_MS / TIME_SCALE);
 }
 
 const era7 = eras[6];
@@ -118,10 +130,9 @@ for (const reduced of [false, true]) {
     const ctx = await newContext(browser, name, reduced);
     const page = await ctx.newPage();
     await ready(page);
-    const option = page.getByTestId("timeline").locator(`[data-era-id="${era7.id}"]`);
-    const cap = await startFrames(page, name);
+    const cap = await startFrames(page, name, TIME_SCALE);
     cap.mark();
-    await option.click();
+    await clickNow(page, `[data-testid="timeline"] [data-era-id="${era7.id}"]`);
     await transitionDone(page);
     await cap.stop();
     await ctx.close();
@@ -132,10 +143,9 @@ for (const reduced of [false, true]) {
     const ctx = await newContext(browser, name, reduced);
     const page = await ctx.newPage();
     await ready(page);
-    const row = page.getByTestId("location-list").locator(`[data-location-id="${firstLoc.id}"]`);
-    const cap = await startFrames(page, name);
+    const cap = await startFrames(page, name, TIME_SCALE);
     cap.mark();
-    await row.click();
+    await clickNow(page, `[data-testid="location-list"] [data-location-id="${firstLoc.id}"]`);
     await transitionDone(page);
     await page.waitForTimeout(1_000); // panel + cards finish after the camera
     await cap.stop();
@@ -147,9 +157,9 @@ test("close", async ({ browser }) => {
   const ctx = await newContext(browser, "close", false);
   const page = await ctx.newPage();
   await ready(page, `?era=${eras[0].id}&loc=${firstLoc.id}`);
-  const cap = await startFrames(page, "close");
+  const cap = await startFrames(page, "close", TIME_SCALE);
   cap.mark();
-  await page.keyboard.press("Escape");
+  await page.evaluate(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })));
   await transitionDone(page);
   await cap.stop();
   await ctx.close();

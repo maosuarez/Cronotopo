@@ -55,7 +55,7 @@ function PanelContent({ location, index, entering, onClose }: ContentProps) {
           id="loc-title"
           ref={headingRef}
           tabIndex={-1}
-          className="-mt-3 font-serif text-[1.75rem] leading-[1.05] font-medium text-ink lg:text-panel"
+          className="-mt-3 font-serif outline-none text-[1.75rem] leading-[1.05] font-medium text-ink lg:text-panel"
         >
           {location.name}
         </h2>

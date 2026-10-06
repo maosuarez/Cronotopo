@@ -47,7 +47,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - [x] F4 Estado, cámara y URL
 - [x] F5 Interfaz
 - [x] F6 QA (e2e + motion)
-- [ ] F6.5 Pulido de movimiento (≥2 iteraciones)
+- [x] F6.5 Pulido de movimiento (≥2 iteraciones)
 - [ ] F7 Revisión final + README
 
 ## Estado
@@ -57,6 +57,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - F3 ✅ escena (globo Blue Marble, atmósfera fresnel tintable, barrido temporal, estrellas, marcadores, arcos trazables, CameraRig+OrbitControls, SceneDirector con las 4 timelines). `next build` ok; captura era 1 revisada (marcadores en Etiopía/Sudáfrica/Francia). Commit antes que F2 porque el contenido corre en paralelo.
 - F4 ✅ store (+`displayedEraId`, `sceneReady`), director robusto a interrupciones, `frameShift` (setViewOffset) para encuadrar a la izquierda del panel / arriba del bottom sheet, `useUrlSync` + `lib/url.ts`, tests store/url, e2e deep link verde.
 - F5 ✅ tokens en `globals.css` (@theme, `--accent` con @property), Timeline (listbox, ←/→ Home/End foco, Enter/Espacio confirma), EraHeader, LocationList, InfoPanel (panel/bottom sheet), ElementCard, LoadingScreen, AccentSync, Announcer. Capturas 1440/390 revisadas; sin scroll horizontal (360/390/1440). Luz principal sigue a la cámara (siempre se ve el hemisferio iluminado).
+- F6.5 ✅ 3 iteraciones de pulido (ver Coreografía › Iteraciones).
 - F6 ✅ e2e 14/14 (consola, era→lista+URL, panel 5 tarjetas, deep link, Esc, teclado, URL inválida, atrás/adelante, móvil, reduced motion). `test:motion` captura 4 momentos + 2 reduced (CDP screencast + recordVideo).
 
 ## Decisiones
@@ -93,7 +94,10 @@ Principio: lo importante se mueve primero y más (cámara > marcadores > arcos >
 **Reduced motion**: vuelos → corte con fundido del canvas (0,18 s out / 0,28 s in); marcadores y arcos solo funden (sin pop ni trazo); tinte 0,3 s; sin barrido, sin pulso, sin rotación idle; panel y tarjetas solo opacidad 0,2 s sin desplazamiento ni stagger.
 
 ### Iteraciones de pulido
-(pendiente F6.5)
+- **It. 1** — Las secuencias originales no mostraban select/close: con SwiftShader el click tardaba ~4 s en procesarse y la cadencia real era 150–200 ms. Arnés: triggers despachados en página (t=0 exacto) y `?debug=1` → `__atlasDebug.timeScale(0.25)` para capturar las timelines 3D a 4× densidad (`animMs` en timings.json). Hallazgo: eras con ubicaciones cercanas (Grecia, Mesopotamia, Roma) quedaban como un único grumo de anillos superpuestos a distancia 2,2. Cambio: `eraFramingPose` = 1,45 + spread·2,4 (min 1,6, max 4), foco = min(1,75, encuadre−0,3) (nunca alejarse al enfocar) y marcadores de tamaño aproximadamente constante en pantalla (escala ∝ distancia cámara-marcador, ref. 1,8).
+- **It. 2** — Grecia ahora se encuadra de cerca y los 3 marcadores se distinguen; el vuelo (giro + acercamiento) es continuo; barrido temporal legible; entradas en orden (salida → barrido/tinte → vuelo → pop escalonado → arcos). Hallazgo: anillo de foco del navegador sobre el título del panel (foco programático). Cambio: `:focus-visible:not([tabindex="-1"])` + `outline-none` en el heading.
+- **It. 3** — Verificación: sin saltos ni elementos sin transición; cierre devuelve la cámara con poca elevación y el desatenuado acompaña; reduced motion usa fundido-corte-fundido sin barrido ni pop. La única discontinuidad (loader → globo en la intro) coincide con la compilación de shaders en software; no se cuenta como fallo.
+- Limitación: la UI 2D (Framer) no se ralentiza con `timeScale`; su sincronía con la cámara se valida con los videos en tiempo real.
 
 ## Bloqueos
 

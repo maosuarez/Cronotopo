@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { buildAtlasQuery, parseAtlasQuery, type AtlasQuery } from "@/lib/url";
 import { useAtlasStore } from "@/store/useAtlasStore";
 
+/** `debug=1` (test hooks) survives URL normalisation for the whole session. */
+let debugSuffix = "";
+
 const toQuery = (): AtlasQuery => {
   const { activeEraId, selectedLocationId } = useAtlasStore.getState();
   return { eraId: activeEraId, locationId: selectedLocationId };
@@ -21,18 +24,19 @@ function applyToStore({ eraId, locationId }: AtlasQuery) {
  */
 export function useUrlSync() {
   useEffect(() => {
+    debugSuffix = new URLSearchParams(window.location.search).get("debug") === "1" ? "&debug=1" : "";
     const initial = parseAtlasQuery(window.location.search);
     applyToStore(initial);
     // Content on screen starts as the deep-linked era (the director would also do this at intro).
     useAtlasStore.getState().setDisplayedEra(useAtlasStore.getState().activeEraId);
-    const canonical = buildAtlasQuery(toQuery());
+    const canonical = buildAtlasQuery(toQuery()) + debugSuffix;
     if (window.location.search !== canonical) {
       window.history.replaceState(null, "", `${window.location.pathname}${canonical}`);
     }
 
     const unsubscribe = useAtlasStore.subscribe((state, prev) => {
       if (state.activeEraId === prev.activeEraId && state.selectedLocationId === prev.selectedLocationId) return;
-      const query = buildAtlasQuery(toQuery());
+      const query = buildAtlasQuery(toQuery()) + debugSuffix;
       if (window.location.search !== query) {
         window.history.pushState(null, "", `${window.location.pathname}${query}`);
       }

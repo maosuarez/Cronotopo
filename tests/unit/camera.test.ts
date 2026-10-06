@@ -62,7 +62,7 @@ describe("framing", () => {
     const tight = eraFramingPose([{ lat: 0, lon: 0 }, { lat: 1, lon: 1 }, { lat: 2, lon: 0 }]);
     const wide = eraFramingPose([{ lat: 0, lon: -80 }, { lat: 0, lon: 80 }, { lat: 40, lon: 0 }]);
     expect(wide.distance).toBeGreaterThan(tight.distance);
-    expect(tight.distance).toBeGreaterThanOrEqual(2.2);
+    expect(tight.distance).toBeGreaterThanOrEqual(1.6);
     expect(wide.distance).toBeLessThanOrEqual(4);
   });
   it("locationFocusPose uses default distance", () => {
