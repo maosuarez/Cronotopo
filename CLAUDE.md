@@ -46,7 +46,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - [x] F3 Escena 3D (+ Coreografía)
 - [x] F4 Estado, cámara y URL
 - [x] F5 Interfaz
-- [ ] F6 QA (e2e + motion)
+- [x] F6 QA (e2e + motion)
 - [ ] F6.5 Pulido de movimiento (≥2 iteraciones)
 - [ ] F7 Revisión final + README
 
@@ -57,6 +57,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - F3 ✅ escena (globo Blue Marble, atmósfera fresnel tintable, barrido temporal, estrellas, marcadores, arcos trazables, CameraRig+OrbitControls, SceneDirector con las 4 timelines). `next build` ok; captura era 1 revisada (marcadores en Etiopía/Sudáfrica/Francia). Commit antes que F2 porque el contenido corre en paralelo.
 - F4 ✅ store (+`displayedEraId`, `sceneReady`), director robusto a interrupciones, `frameShift` (setViewOffset) para encuadrar a la izquierda del panel / arriba del bottom sheet, `useUrlSync` + `lib/url.ts`, tests store/url, e2e deep link verde.
 - F5 ✅ tokens en `globals.css` (@theme, `--accent` con @property), Timeline (listbox, ←/→ Home/End foco, Enter/Espacio confirma), EraHeader, LocationList, InfoPanel (panel/bottom sheet), ElementCard, LoadingScreen, AccentSync, Announcer. Capturas 1440/390 revisadas; sin scroll horizontal (360/390/1440). Luz principal sigue a la cámara (siempre se ve el hemisferio iluminado).
+- F6 ✅ e2e 14/14 (consola, era→lista+URL, panel 5 tarjetas, deep link, Esc, teclado, URL inválida, atrás/adelante, móvil, reduced motion). `test:motion` captura 4 momentos + 2 reduced (CDP screencast + recordVideo).
 
 ## Decisiones
 - React 19.2.8: la que fija create-next-app 16.3.8; compatible con R3F 9.8 (`>=19 <19.4`) y drei 10.
@@ -76,6 +77,8 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - Timeline: foco ≠ selección (cada cambio de era cuesta ~3 s de coreografía). Grupos con ≤2 eras usan etiqueta corta visible ("Contemporánea"), nombre accesible completo.
 - InfoPanel `role=dialog aria-modal=false`; en móvil con el sheet abierto timeline y chips quedan `inert`.
 - Política de confianza: todo `yearLabel` con "c." lleva confidence ≥ medium (80 elementos bajados de high a medium tras la auditoría), según la regla editorial literal.
+- URL con era válida y loc inválida conserva la era (`?era=roma&loc=x` → `?era=roma`); era inválida → era 1.
+- Captura de movimiento vía CDP `Page.startScreencast` (720×450 JPEG): `page.screenshot` tardaba >3 s/frame con SwiftShader.
 - `@types/node` 24 (peer de Vitest 5).
 
 ## Coreografía
