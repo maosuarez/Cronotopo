@@ -20,7 +20,9 @@ GSAP 3.15 · Zustand 5 · Tailwind 4 · Framer Motion 14 (solo UI 2D) · lucide-
 src/app            layout, page, globals.css
 src/components/scene  Experience (dynamic ssr:false), Earth, Atmosphere, Starfield, LocationMarkers, Marker, EraArcs, CameraRig
 src/components/ui     Timeline, EraHeader, InfoPanel, ElementCard, LocationList, LoadingScreen
-src/domain         types.ts, schema.ts (zod), sceneRegistry.ts   — sin React ni Three
+src/domain         types.ts, schema.ts (zod)   — sin React ni Three
+src/scenes         types.ts (contrato), registry.ts, beats.ts (puro), kit/, <escena>/{beats.ts,index.tsx}
+src/components/player  ScenePlayer, SceneCanvas (lazy), PlayerControls, Captions, BeatScrubber
 src/data/eras      01..20 archivos de era; src/data/index.ts agrega/ordena/valida
 src/lib            geo.ts, camera.ts, years.ts, choreography.ts
 src/store          useAtlasStore.ts
@@ -130,7 +132,7 @@ Ajuste S0: el `technology` de Mánchester era "Canal de Bridgewater"; se sustitu
 
 **Fases**
 - [x] S0 Reconocimiento
-- [ ] S1 Contrato y reproductor
+- [x] S1 Contrato y reproductor
 - [ ] S2 Kit de escena
 - [ ] S3 Escena de referencia: Uruk
 - [ ] S4 Escenas 2–6
@@ -139,10 +141,17 @@ Ajuste S0: el `technology` de Mánchester era "Canal de Bridgewater"; se sustitu
 
 ### Estado
 - S0 ✅ mapeo hecho (store, URL sync, InfoPanel/ElementCard, Experience, motionTokens, tests); 5/6 elementos existían, Mánchester ajustado; `validate:data` verde. Instalado `@react-three/postprocessing` 3.1.3.
+- S1 ✅ registro (`scenes`, `getSceneByElementId`, `hasScene`, `getSceneLocation`), `scenes/beats.ts` (`beatAt`, `beatIndexAt`, `midpoint`, `formatClock`, `validateBeats`), escena placeholder 10 s en `primeros-humanos--blombos--technology`, store/URL/`data-scene`, reproductor (clip-path desde la tarjeta, `PLAYER_MOTION`), botón "Ver escena" en ElementCard, `window.__scene` con `?debug=1`. Unit `scenes.test.ts` (recorre todo el registro) y e2e `player.spec.ts`.
 
 ### Decisiones
 - Estado del reproductor en el store (`sceneElementId`), se limpia al cambiar era/ubicación o cerrar panel; Esc del reproductor en fase *capture* con `preventDefault` para no cerrar también el panel.
 - Capa z nueva `--z-player: 50` (entre caption y loader).
+- `openScene(elementId)` selecciona en la misma actualización la ubicación/era del elemento si no es la seleccionada (invariante: la escena siempre pertenece a `selectedLocationId`); ids sin escena se ignoran. `selectLocation` de la misma ubicación no cierra la escena.
+- URL: `scene` solo válido con `loc` válido que contenga el elemento y tenga escena. El deep link abre el reproductor tras `sceneReady` (el globo en `frameloop="never"` no llegaría nunca al primer frame); la URL canónica conserva `scene` mientras tanto.
+- Reloj único en `ScenePlayer`: rAF solo mientras reproduce + chunk listo + presente; `time` (estado) se pasa como prop cada frame. Fin → pausa en `duration` con "Repetir". Reduced motion: el reloj sigue, la escena recibe `midpoint(beat)` (diapositivas con fundido).
+- Calidad por defecto `low` si `hardwareConcurrency ≤ 4`, puntero grueso o ancho < 768 px; `dpr` 1 (low) / [1,2] (high).
+- Teclas del reproductor en fase capture (`keydown` + `keyup`): Espacio siempre es play/pausa (se cancela el click nativo del botón enfocado), ←/→ saltan a inicio de beat, C subtítulos, Esc cierra.
+- Three/R3F siguen fuera del bundle inicial: `SceneCanvas` se carga con `next/dynamic` y cada escena con su `load()`.
 - `domain/sceneRegistry.ts` (vacío, por locationId) se elimina y lo sustituye `src/scenes/registry.ts` por elementId; `ZoomLevel`/`modelRef` siguen en `domain/types.ts`.
 
 ### Bloqueos

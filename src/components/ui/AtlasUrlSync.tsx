@@ -8,6 +8,7 @@ export function AtlasUrlSync() {
   useUrlSync();
   const era = useAtlasStore((s) => s.activeEraId);
   const loc = useAtlasStore((s) => s.selectedLocationId);
+  const scene = useAtlasStore((s) => s.sceneElementId);
   const transitioning = useAtlasStore((s) => s.isTransitioning);
   return (
     <div
@@ -15,6 +16,7 @@ export function AtlasUrlSync() {
       data-testid="atlas-state"
       data-era={era}
       data-loc={loc ?? ""}
+      data-scene={scene ?? ""}
       data-transitioning={String(transitioning)}
     />
   );

@@ -75,9 +75,12 @@ function SceneReady({ onReady }: { onReady?: () => void }) {
 }
 
 export default function Experience({ onReady }: { onReady?: () => void }) {
+  // The scene player covers the globe: stop rendering it until the player closes.
+  const playerOpen = useAtlasStore((s) => s.sceneElementId !== null);
   return (
     <div data-testid="atlas-canvas" className="absolute inset-0">
       <Canvas
+        frameloop={playerOpen ? "never" : "always"}
         dpr={[1, 2]}
         camera={{ fov: 40, near: 0.1, far: 100, position: [0, 0, 7.5] }}
         gl={{ antialias: true, powerPreference: "high-performance" }}

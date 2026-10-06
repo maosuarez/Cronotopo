@@ -130,3 +130,23 @@ export const UI_MOTION = {
   /** Loader graticule rotation period. */
   loaderSpin: 60,
 } as const;
+
+/** Scene player (2D overlay, Framer Motion). Seconds. */
+export const PLAYER_MOTION = {
+  /** Overlay expands from the card's rect to fullscreen (clip-path). */
+  open: 0.6,
+  openEase: CSS_EASE.settle,
+  /** Collapses back into the card: shorter, accelerating away. */
+  close: 0.42,
+  closeEase: CSS_EASE.travel,
+  /** Title/controls fade in once the overlay is mostly open. */
+  chromeDelay: 0.3,
+  chromeIn: 0.35,
+  captionOut: 0.18,
+  captionIn: 0.32,
+  /** Reduced motion: overlay fade and slideshow fade between key frames. */
+  reducedFade: 0.2,
+  slideFade: 0.3,
+  /** Corner radius of the card the overlay grows from (px). */
+  originRadius: 6,
+} as const;

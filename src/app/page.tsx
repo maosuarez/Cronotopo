@@ -1,3 +1,4 @@
+import { ScenePlayer } from "@/components/player/ScenePlayer";
 import { ExperienceLoader } from "@/components/scene/ExperienceLoader";
 import { AccentSync } from "@/components/ui/AccentSync";
 import { Announcer } from "@/components/ui/Announcer";
@@ -31,6 +32,7 @@ export default function Home() {
       <LocationList />
       <Timeline />
       <InfoPanel />
+      <ScenePlayer />
       <LoadingScreen />
     </main>
   );

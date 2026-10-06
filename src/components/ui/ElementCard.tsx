@@ -1,10 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Play } from "lucide-react";
+import { useRef } from "react";
 import type { Confidence, HistoricalElement } from "@/domain/types";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { CSS_EASE, UI_MOTION } from "@/lib/motionTokens";
+import { formatClock } from "@/scenes/beats";
+import { getSceneByElementId } from "@/scenes/registry";
+import { useAtlasStore } from "@/store/useAtlasStore";
 import { categoryMeta } from "./categoryMeta";
 
 const confidenceMeta: Record<Exclude<Confidence, "high">, { label: string; filled: number; note: string }> = {
@@ -49,9 +53,18 @@ export function ElementCard({ element, index, baseDelay }: Props) {
   const reduced = useReducedMotion();
   const { label, Icon } = categoryMeta[element.category];
   const titleId = `el-${element.id}`;
+  const scene = getSceneByElementId(element.id);
+  const openScene = useAtlasStore((s) => s.openScene);
+  const cardRef = useRef<HTMLElement>(null);
+
+  const onOpenScene = () => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    openScene(element.id, rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null);
+  };
 
   return (
     <motion.article
+      ref={cardRef}
       data-testid="element-card"
       aria-labelledby={titleId}
       initial={reduced ? { opacity: 0 } : { opacity: 0, y: 12 }}
@@ -79,6 +92,18 @@ export function ElementCard({ element, index, baseDelay }: Props) {
         {element.name}
       </h3>
       <p className="mt-2 text-body text-ink-dim">{element.summary}</p>
+      {scene && (
+        <button
+          type="button"
+          onClick={onOpenScene}
+          data-testid="open-scene"
+          data-element-id={element.id}
+          className="mt-3 -ml-1 inline-flex h-11 cursor-pointer items-center gap-2 rounded-full border border-accent-line px-4 text-meta text-accent transition-colors duration-200 hover:bg-accent-soft"
+        >
+          <Play aria-hidden size={14} strokeWidth={1.75} className="fill-current" />
+          Ver escena · {formatClock(scene.duration)}
+        </button>
+      )}
       <div className="mt-3 flex items-center justify-between gap-3">
         <a
           href={element.sourceUrl}
