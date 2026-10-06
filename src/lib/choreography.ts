@@ -135,6 +135,14 @@ export const UI_MOTION = {
   cardStagger: 0.07,
   cardIn: 0.5,
   reducedFade: 0.2,
+  /** Panel content leaving when the selected location changes while the panel stays open. */
+  contentOut: 0.2,
+  /** Timeline caption swap. */
+  captionFade: 0.15,
+  /** Location rows enter after the header text. */
+  rowsDelay: 0.1,
+  /** Loader graticule rotation period. */
+  loaderSpin: 60,
 } as const;
 
 /* ------------------------------------------------------------ scene state */

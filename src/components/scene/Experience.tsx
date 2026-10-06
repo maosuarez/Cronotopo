@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Color, DirectionalLight } from "three";
+import { Color, DirectionalLight, Vector3 } from "three";
 import { sceneMotion } from "@/lib/choreography";
 import { useAtlasStore } from "@/store/useAtlasStore";
 import { Atmosphere } from "./Atmosphere";
@@ -15,11 +15,17 @@ import { useSceneState } from "./sceneState";
 import { Starfield } from "./Starfield";
 
 const SUN_BASE = new Color("#fff4e0");
+/** Key light offset in camera space (upper-left), so the viewed hemisphere is always lit. */
+const SUN_OFFSET = new Vector3(-2.2, 1.6, 0.6);
+const tmp = new Vector3();
 
 function Lights() {
   const sun = useRef<DirectionalLight>(null);
-  useFrame(() => {
-    sun.current?.color.copy(SUN_BASE).lerp(sceneMotion.accent, 0.2);
+  useFrame(({ camera }) => {
+    const light = sun.current;
+    if (!light) return;
+    light.color.copy(SUN_BASE).lerp(sceneMotion.accent, 0.2);
+    light.position.copy(camera.position).add(tmp.copy(SUN_OFFSET).applyQuaternion(camera.quaternion));
   });
   return (
     <>
