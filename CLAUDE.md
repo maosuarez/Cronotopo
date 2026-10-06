@@ -44,7 +44,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - [x] F1 Dominio y utilidades
 - [ ] F2 Contenido (300 elementos)
 - [x] F3 Escena 3D (+ Coreografía)
-- [ ] F4 Estado, cámara y URL
+- [x] F4 Estado, cámara y URL
 - [ ] F5 Interfaz
 - [ ] F6 QA (e2e + motion)
 - [ ] F6.5 Pulido de movimiento (≥2 iteraciones)
@@ -54,6 +54,7 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - F0 ✅ scaffold, deps exactas, scripts, `output: 'export'`, build+lint verdes.
 - F1 ✅ types/schema/sceneRegistry, lib geo/years/camera (puro), 34 tests verdes. (0,0)→+X, lon+90→−Z, polo N→+Y.
 - F3 ✅ escena (globo Blue Marble, atmósfera fresnel tintable, barrido temporal, estrellas, marcadores, arcos trazables, CameraRig+OrbitControls, SceneDirector con las 4 timelines). `next build` ok; captura era 1 revisada (marcadores en Etiopía/Sudáfrica/Francia). Commit antes que F2 porque el contenido corre en paralelo.
+- F4 ✅ store (+`displayedEraId`, `sceneReady`), director robusto a interrupciones, `frameShift` (setViewOffset) para encuadrar a la izquierda del panel / arriba del bottom sheet, `useUrlSync` + `lib/url.ts`, tests store/url, e2e deep link verde.
 
 ## Decisiones
 - React 19.2.8: la que fija create-next-app 16.3.8; compatible con R3F 9.8 (`>=19 <19.4`) y drei 10.
@@ -67,7 +68,8 @@ Store: `activeEraId`, `selectedLocationId`, `hoveredLocationId`, `isTransitionin
 - Formato de años: a.C. siempre; d.C. solo < 1000 (117 d.C., 1969); separador de miles solo ≥ 10.000.
 - Prehistoria: yearLabel en "años AP" cuando la fuente data así.
 - Idle rotation = `OrbitControls.autoRotate` (la cámara orbita; el globo no rota → posiciones de marcadores fijas en mundo).
-- Era mostrada (`displayedEraId`) separada de `activeEraId`: cambia en el `swapEra` de la timeline (t≈0,4 s), para que la salida de la era anterior se vea.
+- Era mostrada (`displayedEraId`, en el store) separada de `activeEraId`: cambia en el `swapEra` de la timeline (t≈0,4 s), para que la salida de la era anterior se vea; header y LocationList leen `displayedEraId`, la timeline `activeEraId`.
+- Estado e2e: `<div data-testid="atlas-state" data-era data-loc data-transitioning hidden>` (sin exponer el store en window).
 - Starfield: radio 25/profundidad 20 (el shader de drei duplica la distancia efectiva y con 50/40 quedaban fuera de `far`).
 - `@types/node` 24 (peer de Vitest 5).
 

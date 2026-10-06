@@ -6,6 +6,10 @@ export type AtlasState = {
   selectedLocationId: string | null;
   hoveredLocationId: string | null;
   isTransitioning: boolean;
+  /** Era whose markers/arcs/content are on screen; follows activeEraId when the era-change timeline swaps. */
+  displayedEraId: string;
+  /** Earth texture loaded and first frame rendered. */
+  sceneReady: boolean;
   /** Changing era always clears the selection. Unknown ids are ignored. */
   setEra: (eraId: string) => void;
   /** Selecting a location of another era also switches to that era. Unknown ids are ignored. */
@@ -13,6 +17,8 @@ export type AtlasState = {
   clearSelection: () => void;
   setHovered: (locationId: string | null) => void;
   setTransitioning: (value: boolean) => void;
+  setDisplayedEra: (eraId: string) => void;
+  setSceneReady: (value: boolean) => void;
 };
 
 export const useAtlasStore = create<AtlasState>()((set, get) => ({
@@ -20,6 +26,8 @@ export const useAtlasStore = create<AtlasState>()((set, get) => ({
   selectedLocationId: null,
   hoveredLocationId: null,
   isTransitioning: false,
+  displayedEraId: firstEra.id,
+  sceneReady: false,
   setEra: (eraId) => {
     if (!getEra(eraId)) return;
     if (get().activeEraId === eraId && get().selectedLocationId === null) return;
@@ -38,5 +46,11 @@ export const useAtlasStore = create<AtlasState>()((set, get) => ({
   },
   setTransitioning: (value) => {
     if (get().isTransitioning !== value) set({ isTransitioning: value });
+  },
+  setDisplayedEra: (eraId) => {
+    if (get().displayedEraId !== eraId) set({ displayedEraId: eraId });
+  },
+  setSceneReady: (value) => {
+    if (get().sceneReady !== value) set({ sceneReady: value });
   },
 }));

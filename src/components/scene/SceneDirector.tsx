@@ -15,7 +15,7 @@ import {
 import { eraFramingPose, locationFocusPose } from "@/lib/camera";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useAtlasStore } from "@/store/useAtlasStore";
-import { cameraDriverRef, useSceneState } from "./sceneState";
+import { cameraDriverRef } from "./sceneState";
 
 const eraPoseOf = (eraId: string) => {
   const era = getEra(eraId)!;
@@ -30,7 +30,7 @@ const eraPoseOf = (eraId: string) => {
 export function SceneDirector() {
   const reduced = useReducedMotion();
   const reducedRef = useRef(reduced);
-  const ready = useSceneState((s) => s.ready);
+  const ready = useAtlasStore((s) => s.sceneReady);
 
   useEffect(() => {
     reducedRef.current = reduced;
@@ -78,6 +78,24 @@ export function SceneDirector() {
       timeline = first(ctx);
     };
 
+    const selectThen = (gen: number, locationId: string) => () => {
+      timeline = select(gen, locationId);
+      if (!timeline) atlas.getState().setTransitioning(false);
+    };
+
+    // Era-change timeline to `eraId`, optionally followed by a selection in it.
+    const changeEra = (gen: number, eraId: string, selection: string | null) =>
+      chain(
+        gen,
+        (ctx) =>
+          createEraChangeTimeline(
+            { ...ctx, swapEra: () => atlas.getState().setDisplayedEra(eraId) },
+            eraPoseOf(eraId),
+            getEra(eraId)!.accentColor,
+          ),
+        selection ? selectThen(gen, selection) : undefined,
+      );
+
     const start = (run: (gen: number) => void) => {
       timeline?.kill();
       generation += 1;
@@ -85,12 +103,12 @@ export function SceneDirector() {
     };
 
     const { activeEraId, selectedLocationId } = atlas.getState();
-    useSceneState.getState().setDisplayedEraId(activeEraId);
+    atlas.getState().setDisplayedEra(activeEraId);
     start((gen) =>
       chain(
         gen,
         (ctx) => createIntroTimeline(ctx, eraPoseOf(activeEraId), getEra(activeEraId)!.accentColor),
-        selectedLocationId ? () => (timeline = select(gen, selectedLocationId)) : undefined,
+        selectedLocationId ? selectThen(gen, selectedLocationId) : undefined,
       ),
     );
 
@@ -98,22 +116,14 @@ export function SceneDirector() {
       const eraChanged = state.activeEraId !== prev.activeEraId;
       const selection = state.selectedLocationId;
       if (!eraChanged && selection === prev.selectedLocationId) return;
+      if (!getEra(state.activeEraId)) return;
 
-      if (eraChanged) {
-        const era = getEra(state.activeEraId);
-        if (!era) return;
-        start((gen) =>
-          chain(
-            gen,
-            (ctx) =>
-              createEraChangeTimeline(
-                { ...ctx, swapEra: () => useSceneState.getState().setDisplayedEraId(era.id) },
-                eraPoseOf(era.id),
-                era.accentColor,
-              ),
-            selection ? () => (timeline = select(gen, selection)) : undefined,
-          ),
-        );
+      // An interrupted era change leaves the previous era's markers on screen:
+      // finish the era change first so marker indices match the active era.
+      const staleDisplay = state.displayedEraId !== state.activeEraId;
+
+      if (eraChanged || staleDisplay) {
+        start((gen) => changeEra(gen, state.activeEraId, selection));
       } else if (selection) {
         start((gen) => {
           timeline = select(gen, selection);

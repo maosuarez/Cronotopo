@@ -103,6 +103,15 @@ export const CLOSE = {
   unhighlight: 0.35,
 } as const;
 
+/** Framing offset so the focused location clears the UI panel (432px right panel / 54dvh bottom sheet). */
+export const FRAMING = {
+  panelWidthDesktop: 432,
+  sheetHeightMobile: 0.54,
+  desktopBreakpoint: 1024,
+  /** Mobile: focus point sits at this fraction of the free (top) area height. */
+  mobileFocusY: 0.45,
+} as const;
+
 export const REDUCED = {
   fadeOut: 0.18,
   fadeIn: 0.28,
@@ -151,6 +160,8 @@ export const sceneMotion = {
   sweepStrength: 0,
   /** Whole-canvas fade (reduced-motion cuts). 1 = visible. */
   canvasOpacity: 1,
+  /** 0..1 amount of panel framing offset applied to the projection. */
+  frameShift: 0,
   /** Pulse & idle allowed (false under reduced motion). */
   ambient: true,
   markers: [0, 1, 2].map<MarkerMotion>(() => ({ scale: 0, opacity: 0, highlight: 0 })),
@@ -211,9 +222,18 @@ function addFlight(
 }
 
 /** Reduced motion: fade the canvas out, cut the camera, fade back in. */
-function addCut(tl: gsap.core.Timeline, ctx: DirectorContext, to: CameraPose, position: gsap.Position) {
+function addCut(
+  tl: gsap.core.Timeline,
+  ctx: DirectorContext,
+  to: CameraPose,
+  position: gsap.Position,
+  frameShift: number,
+) {
   tl.to(ctx.motion, { canvasOpacity: 0, duration: REDUCED.fadeOut, ease: "none" }, position)
-    .call(() => ctx.camera.applyPose(to))
+    .call(() => {
+      ctx.camera.applyPose(to);
+      ctx.motion.frameShift = frameShift;
+    })
     .to(ctx.motion, { canvasOpacity: 1, duration: REDUCED.fadeIn, ease: "none" });
 }
 
@@ -269,6 +289,7 @@ export function createIntroTimeline(ctx: DirectorContext, eraPose: CameraPose, a
   const { motion, camera, reduced } = ctx;
   const tl = base(ctx, "intro");
   motion.accent.set(accent);
+  motion.frameShift = 0;
   motion.markers.forEach((m) => Object.assign(m, { scale: 0, opacity: 0, highlight: 0 }));
   motion.arcs.forEach((a) => Object.assign(a, { progress: 0, opacity: 0 }));
 
@@ -316,7 +337,7 @@ export function createEraChangeTimeline(
       .call(() => ctx.swapEra?.(), [], REDUCED.elementFade)
       .to(motion.accent, { r: target.r, g: target.g, b: target.b, duration: REDUCED.tint, ease: "none" }, 0);
     tl.set(allMarkers(motion), { highlight: 0 }, REDUCED.elementFade);
-    addCut(tl, ctx, eraPose, REDUCED.elementFade);
+    addCut(tl, ctx, eraPose, REDUCED.elementFade, 0);
     marksIn(tl, ctx, ">");
     return tl;
   }
@@ -354,6 +375,7 @@ export function createEraChangeTimeline(
   // Camera travels to the new framing; new era arrives as it brakes.
   const duration = flightDuration(camera.getPose(), eraPose, CAMERA.flight);
   addFlight(tl, ctx, eraPose, duration, CAMERA.arcLift, ERA_CHANGE.cameraAt);
+  tl.to(motion, { frameShift: 0, duration, ease: EASE.travel }, ERA_CHANGE.cameraAt);
   const markersAt = Math.max(ERA_CHANGE.swapAt + 0.05, ERA_CHANGE.cameraAt + duration * ERA_CHANGE.markersInAtFlight);
   marksIn(tl, ctx, markersAt);
   return tl;
@@ -373,12 +395,13 @@ export function createSelectTimeline(
   if (reduced) {
     tl.to(others, { opacity: SELECT.dimOpacity, highlight: 0, duration: REDUCED.elementFade, ease: "none" }, 0);
     tl.to(chosen, { opacity: 1, scale: 1, highlight: 1, duration: REDUCED.elementFade, ease: "none" }, 0);
-    addCut(tl, ctx, focusPose, 0);
+    addCut(tl, ctx, focusPose, 0, 1);
     return tl;
   }
 
   const duration = flightDuration(camera.getPose(), focusPose, CAMERA.flight);
   addFlight(tl, ctx, focusPose, duration, CAMERA.arcLift, 0);
+  tl.to(motion, { frameShift: 1, duration, ease: EASE.travel }, 0);
   tl.to(others, { opacity: SELECT.dimOpacity, highlight: 0, duration: SELECT.dimOthers, ease: EASE.tint }, 0);
   tl.to(chosen, { opacity: 1, scale: 1, duration: SELECT.dimOthers, ease: EASE.tint }, 0);
   tl.to(chosen, { highlight: 1, duration: SELECT.highlight, ease: EASE.pop }, duration * SELECT.highlightAtFlight);
@@ -392,13 +415,14 @@ export function createCloseTimeline(ctx: DirectorContext, eraPose: CameraPose): 
 
   if (reduced) {
     tl.to(allMarkers(motion), { opacity: 1, highlight: 0, duration: REDUCED.elementFade, ease: "none" }, 0);
-    addCut(tl, ctx, eraPose, 0);
+    addCut(tl, ctx, eraPose, 0, 0);
     return tl;
   }
 
   tl.to(allMarkers(motion), { highlight: 0, duration: CLOSE.unhighlight, ease: EASE.exit }, 0);
   const duration = flightDuration(camera.getPose(), eraPose, CAMERA.ret);
   addFlight(tl, ctx, eraPose, duration, CAMERA.arcLiftReturn, CLOSE.cameraAt);
+  tl.to(motion, { frameShift: 0, duration, ease: EASE.travel }, CLOSE.cameraAt);
   tl.to(allMarkers(motion), { opacity: 1, scale: 1, duration: CLOSE.undim, ease: EASE.tint }, CLOSE.undimAt);
   return tl;
 }

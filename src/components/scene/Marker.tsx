@@ -69,9 +69,10 @@ export function Marker({ location, index }: Props) {
 
     const h = m.highlight;
     const pulse = sceneMotion.ambient ? (clock.elapsedTime * 0.6 + phase) % 1 : 0;
-    const pulseScale = sceneMotion.ambient ? 1 + pulse * 0.6 : 1;
+    // Pulse fades out as the highlight comes in; highlighted ring ends ≈3× the dot diameter.
+    const pulseScale = sceneMotion.ambient ? 1 + pulse * 0.6 * (1 - h) : 1;
     const pulseFade = sceneMotion.ambient ? 1 - pulse : 0.7;
-    ring.current?.scale.setScalar(pulseScale * (1 + 0.8 * h));
+    ring.current?.scale.setScalar(pulseScale * (1 + 0.24 * h));
 
     if (dotMat.current) {
       dotMat.current.color.copy(sceneMotion.accent);

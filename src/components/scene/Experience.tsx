@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Color, DirectionalLight } from "three";
 import { sceneMotion } from "@/lib/choreography";
+import { useAtlasStore } from "@/store/useAtlasStore";
 import { Atmosphere } from "./Atmosphere";
 import { CameraRig } from "./CameraRig";
 import { Earth } from "./Earth";
@@ -53,13 +54,14 @@ function SceneReady({ onReady }: { onReady?: () => void }) {
     }
     done.current = true;
     document.documentElement.dataset.sceneReady = "true";
-    useSceneState.getState().setReady(true);
+    useAtlasStore.getState().setSceneReady(true);
     onReady?.();
   });
   useEffect(
     () => () => {
       delete document.documentElement.dataset.sceneReady;
-      useSceneState.setState({ ready: false, textureLoaded: false });
+      useSceneState.setState({ textureLoaded: false });
+      useAtlasStore.getState().setSceneReady(false);
     },
     [],
   );

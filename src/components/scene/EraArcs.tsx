@@ -10,7 +10,7 @@ import { getEra } from "@/data/index";
 import { sceneMotion } from "@/lib/choreography";
 import { greatCirclePoints, latLonToVector3, angleBetweenUnit } from "@/lib/geo";
 import type { Coordinates } from "@/domain/types";
-import { useSceneState } from "./sceneState";
+import { useAtlasStore } from "@/store/useAtlasStore";
 
 const SEGMENTS = 96;
 const noRaycast = () => null;
@@ -56,7 +56,7 @@ function Arc({ points, index }: { points: ReturnType<typeof arcPoints>; index: n
 }
 
 export function EraArcs() {
-  const era = getEra(useSceneState((s) => s.displayedEraId));
+  const era = getEra(useAtlasStore((s) => s.displayedEraId));
   const arcs = useMemo(
     () => (era ? PAIRS.map(([a, b]) => arcPoints(era.locations[a].coordinates, era.locations[b].coordinates)) : []),
     [era],

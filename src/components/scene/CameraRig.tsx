@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, type ComponentRef } from "react";
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { CAMERA, type CameraDriver } from "@/lib/choreography";
+import type { PerspectiveCamera } from "three";
+import { CAMERA, FRAMING, sceneMotion, type CameraDriver } from "@/lib/choreography";
 import { poseFromPosition, positionFromPose } from "@/lib/camera";
 import { useAtlasStore } from "@/store/useAtlasStore";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -15,6 +16,29 @@ export function CameraRig() {
   const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
   const camera = useThree((s) => s.camera);
   const reduced = useReducedMotion();
+  const appliedOffset = useRef("");
+
+  // Shifts the projection so the focus point clears the UI panel (see FRAMING). Cheap: only touches
+  // the camera when factor or viewport change; resizes are picked up on the next frame.
+  useFrame(({ camera: cam, size }) => {
+    const f = sceneMotion.frameShift;
+    const key = `${f}|${size.width}|${size.height}`;
+    if (key === appliedOffset.current || !("setViewOffset" in cam)) return;
+    appliedOffset.current = key;
+    const persp = cam as PerspectiveCamera;
+    if (f < 0.0005) {
+      persp.clearViewOffset();
+      return;
+    }
+    const { width, height } = size;
+    // Positive offset moves the content left / up on screen.
+    const shiftX = width >= FRAMING.desktopBreakpoint ? FRAMING.panelWidthDesktop / 2 : 0;
+    const shiftY =
+      width >= FRAMING.desktopBreakpoint
+        ? 0
+        : height / 2 - FRAMING.mobileFocusY * height * (1 - FRAMING.sheetHeightMobile);
+    persp.setViewOffset(width, height, shiftX * f, shiftY * f, width, height);
+  });
 
   // Controls enabled / idle rotation follow the store without re-rendering.
   useEffect(() => {
